@@ -37,3 +37,7 @@ Thumbs.db
 
 # ===== TypeScript 增量缓存 =====
 *.tsbuildinfo
+
+# ===== 自动生成文件（unplugin auto-import / components，dev/build 时自动重建，无需入库）=====
+apps/user-web/auto-imports.d.ts
+apps/user-web/components.d.ts
