@@ -1,0 +1,48 @@
+// Mock 黑客松数据
+import type { Hackathon } from '@/types/course'
+
+export const mockHackathons: Hackathon[] = [
+  {
+    id: 'h001',
+    title: 'AI Hackathon 2024 夏季赛',
+    description: '主题：AI + 行业应用创新，鼓励结合医疗、教育、金融等场景的 AI 原生应用',
+    coverImage: 'https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg',
+    prizePool: 100000,
+    startTime: '2024-07-15 09:00',
+    endTime: '2024-07-17 18:00',
+    signupDeadline: '2024-07-10 23:59',
+    location: '上海市浦东新区',
+    maxTeams: 40,
+    currentTeams: 23,
+    status: 'signup',
+    myTeamId: 'ht001',
+  },
+  {
+    id: 'h002',
+    title: '蓝血高校 AI 创意赛',
+    description: '面向在校学生的 AI 创意大赛，主题不限，鼓励创新思维与原型实现',
+    coverImage: 'https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg',
+    prizePool: 50000,
+    startTime: '2024-08-01 09:00',
+    endTime: '2024-08-03 18:00',
+    signupDeadline: '2024-07-25 23:59',
+    location: '线上 + 杭州',
+    maxTeams: 60,
+    currentTeams: 34,
+    status: 'signup',
+  },
+  {
+    id: 'h003',
+    title: '企业级 AI 应用黑客松',
+    description: '聚焦企业数字化转型场景，解决真实业务问题的 AI 应用方案',
+    coverImage: 'https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg',
+    prizePool: 80000,
+    startTime: '2024-06-01 09:00',
+    endTime: '2024-06-03 18:00',
+    signupDeadline: '2024-05-25 23:59',
+    location: '北京市海淀区',
+    maxTeams: 30,
+    currentTeams: 30,
+    status: 'ended',
+  },
+]

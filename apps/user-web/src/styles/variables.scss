@@ -1,0 +1,80 @@
+// 蓝血菁英平台 - 浅色主题变量
+// 高级感、低对比度配色
+
+:root {
+  // 主背景色系（浅灰白）
+  --bg-primary: #F7F8FC;
+  --bg-secondary: #FFFFFF;
+  --bg-tertiary: #F0F2F7;
+  --bg-card: #FFFFFF;
+  --bg-overlay: rgba(0, 0, 0, 0.4);
+
+  // 主色调（蓝色系 - 柔和）
+  --primary: #4A90E2;
+  --primary-light: #7AB3F0;
+  --primary-dark: #357ABD;
+  --primary-alpha: rgba(74, 144, 226, 0.12);
+
+  // 辅助色（青色）
+  --accent: #5BC2C1;
+  --accent-light: #8DD4D3;
+  --accent-alpha: rgba(91, 194, 193, 0.12);
+
+  // 成功色（薄荷绿）
+  --success: #52C9A4;
+  --success-light: #7DD9BF;
+  --success-alpha: rgba(82, 201, 164, 0.12);
+
+  // 警告色（暖橙）
+  --warning: #F5A623;
+  --warning-light: #F7BD5C;
+  --warning-alpha: rgba(245, 166, 35, 0.12);
+
+  // 危险色（玫瑰红 - 低饱和）
+  --danger: #E57474;
+  --danger-light: #ED9999;
+  --danger-alpha: rgba(229, 116, 116, 0.12);
+
+  // 文字色系（高级灰）
+  --text-primary: #2C3345;
+  --text-secondary: #5A6478;
+  --text-tertiary: #909BAD;
+  --text-placeholder: #B8BFCC;
+
+  // 边框色
+  --border: #E8EBF0;
+  --border-light: #F0F2F7;
+  --divider: #EEF0F4;
+
+  // 阴影（柔和）
+  --shadow-sm: 0 1px 4px rgba(44, 51, 69, 0.06);
+  --shadow-md: 0 4px 12px rgba(44, 51, 69, 0.08);
+  --shadow-lg: 0 8px 24px rgba(44, 51, 69, 0.10);
+
+  // 圆角
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+
+  // 间距
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 20px;
+  --spacing-2xl: 24px;
+  --spacing-3xl: 32px;
+
+  // 字体
+  --font-size-xs: 11px;
+  --font-size-sm: 12px;
+  --font-size-md: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 18px;
+  --font-size-2xl: 20px;
+  --font-size-3xl: 24px;
+
+  // 移动端适配最大宽度
+  --max-width: 430px;
+}

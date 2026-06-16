@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>蓝血菁英平台 v6.0</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+--bg:#070B14;--bg2:#0D1526;--bg3:#131B2E;--bd:rgba(56,120,220,.12);--bdh:rgba(56,120,220,.3);
+--t:#E8EDF5;--t2:#8899B4;--t3:#506080;--t4:#3A4C68;
+--bl:#1890FF;--bld:rgba(24,144,255,.12);--cy:#00D4AA;--cyd:rgba(0,212,170,.1);
+--gd:linear-gradient(135deg,#1890FF,#00D4AA);
+--go:#F5A623;--god:rgba(245,166,35,.12);
+--rd:#FF4D6A;--rdd:rgba(255,77,106,.1);
+--pr:#8B5CF6;--prd:rgba(139,92,246,.12);
+--rl:16px;--rf:9999px;--f:'PingFang SC',-apple-system,sans-serif
+}
+body{font-family:var(--f);background:var(--bg);color:var(--t);font-size:13px;line-height:1.5;overflow:hidden;height:100vh;height:100dvh;-webkit-text-size-adjust:100%}
+::-webkit-scrollbar{width:0}
+.app{max-width:430px;margin:0 auto;height:100vh;height:100dvh;position:relative;overflow:hidden}
+#M{overflow-y:auto;height:calc(100vh - 64px);height:calc(100dvh - 64px);padding:0 16px 24px;-webkit-overflow-scrolling:touch}
+.P{display:none}.P.on{display:block}
+.T{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;display:flex;background:rgba(7,11,20,.98);border-top:1px solid var(--bd);z-index:999;padding:6px 0 max(6px,env(safe-area-inset-bottom))}
+.T>div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--t4);font-size:10px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;padding:4px 0}
+.T>div.a{color:var(--bl)}
+.C{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:16px;margin-bottom:12px}
+.tg{display:inline-block;padding:3px 10px;border-radius:var(--rf);font-size:10px;font-weight:600;white-space:nowrap}
+.ch{display:inline-block;padding:3px 10px;border-radius:var(--rf);font-size:10px;border:1px solid var(--t4);color:var(--t2);margin:2px}
+.bt{display:inline-flex;align-items:center;justify-content:center;padding:9px 18px;border-radius:var(--rf);font-size:12px;font-weight:600;cursor:pointer;border:none;font-family:var(--f)}
+.bp{background:var(--gd);color:#fff}.bo{background:none;border:1.5px solid var(--t4);color:var(--t)}.bf{width:100%}.bd{background:var(--rd);color:#fff}
+.sr{width:100%;background:var(--bg3);border:1px solid var(--bd);color:var(--t);padding:10px 14px 10px 36px;border-radius:var(--rf);font-size:12px;font-family:var(--f);outline:none}
+.sr::placeholder{color:var(--t3)}
+.pl{display:flex;gap:8px;overflow-x:auto;margin-bottom:14px;scrollbar-width:none}.pl::-webkit-scrollbar{display:none}
+.pl>div{padding:7px 16px;border-radius:var(--rf);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;border:1px solid var(--t4);color:var(--t2);flex-shrink:0}
+.pl>div.a{background:var(--bl);color:#fff;border-color:var(--bl)}
+.pb{height:5px;background:rgba(24,144,255,.1);border-radius:3px;overflow:hidden}.pb>div{height:100%;border-radius:3px}
+.bn{width:100%;border-radius:var(--rl);overflow:hidden;position:relative;margin-bottom:12px;aspect-ratio:2.2/1;background:linear-gradient(135deg,#0a1628,#1a2a4a,#0f1e38)}
+.bn-o{position:absolute;inset:0;padding:16px;display:flex;flex-direction:column;justify-content:flex-end;background:linear-gradient(180deg,transparent 40%,rgba(7,11,20,.85))}
+.fm{margin-bottom:14px}.fm-l{font-size:12px;color:var(--t2);margin-bottom:6px;font-weight:600}
+.fm-i{width:100%;background:var(--bg3);border:1px solid var(--bd);color:var(--t);padding:10px 14px;border-radius:var(--rl);font-size:13px;font-family:var(--f);outline:none}
+.fm-i:focus{border-color:var(--bl)}
+.fm-ta{width:100%;background:var(--bg3);border:1px solid var(--bd);color:var(--t);padding:10px 14px;border-radius:var(--rl);font-size:13px;font-family:'Courier New',monospace;outline:none;resize:none;min-height:80px}
+.fm-up{display:flex;gap:10px;align-items:center;padding:16px;background:var(--bg3);border:2px dashed var(--bd);border-radius:var(--rl);cursor:pointer;color:var(--t2);font-size:12px;text-align:center;justify-content:center}
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:2000;display:none;align-items:flex-end;justify-content:center}
+.mo.on{display:flex}
+.mo-c{background:var(--bg2);border-radius:var(--rl) var(--rl) 0 0;padding:24px;width:100%;max-width:430px;max-height:80vh;overflow-y:auto}
+.mo-t{font-size:16px;font-weight:700;margin-bottom:16px;text-align:center}
+.sb{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:var(--rf);font-size:10px;font-weight:600}
+.sb.db{background:var(--bld);color:var(--bl)}.sb.cy{background:var(--cyd);color:var(--cy)}.sb.rd{background:var(--rdd);color:var(--rd)}.sb.go{background:var(--god);color:var(--go)}.sb.pr{background:var(--prd);color:var(--pr)}
+.lv{padding:2px 8px;border-radius:var(--rf);font-size:10px;font-weight:700}
+.lv.l0{background:rgba(80,96,128,.2);color:var(--t3)}.lv.l1{background:rgba(0,212,170,.15);color:var(--cy)}.lv.l2{background:var(--bld);color:var(--bl)}.lv.l3{background:var(--god);color:var(--go)}.lv.l4{background:var(--prd);color:var(--pr)}.lv.l5{background:var(--rdd);color:var(--rd)}
+.tc{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:14px;margin-bottom:10px;cursor:pointer}.tc:hover{border-color:var(--bdh)}.tc.dis{opacity:.55;cursor:not-allowed}
+.tc-h{display:flex;align-items:center;gap:4px;margin-bottom:6px}
+.tc-ft{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--t3);justify-content:space-between}
+.st{display:flex;background:var(--bg3);border-radius:var(--rf);padding:3px;border:1px solid var(--bd);margin-bottom:14px}
+.st>div{flex:1;text-align:center;padding:8px 0;border-radius:var(--rf);font-size:12px;font-weight:600;cursor:pointer;color:var(--t3)}.st>div.a{background:var(--bl);color:#fff}
+.sh{font-size:13px;font-weight:700;margin-bottom:10px;color:var(--t2)}
+.ts{position:fixed;top:60px;left:50%;transform:translateX(-50%);background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:10px 20px;font-size:13px;font-weight:600;z-index:3000;display:none;white-space:nowrap}.ts.on{display:block}
+.tl{position:relative;padding-left:24px}.tl::before{content:'';position:absolute;left:8px;top:4px;bottom:4px;width:1.5px;background:var(--bd)}
+.tl-i{position:relative;margin-bottom:16px}.tl-i::before{content:'';position:absolute;left:-20px;top:4px;width:10px;height:10px;border-radius:50%;border:2px solid;background:var(--bg)}
+.tl-d{font-size:11px;color:var(--t3);margin-top:2px}
+.tl-i.done::before{border-color:var(--cy);background:var(--cy)}.tl-i.act::before{border-color:var(--bl);background:var(--bl)}
+.tl-n{font-size:13px;font-weight:600}
+.rf{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--t2);overflow-x:auto;padding:4px 0}.rf-n{padding:3px 7px;border-radius:var(--rf);white-space:nowrap;background:var(--bg3)}.rf-n.a{background:var(--bl);color:#fff}.rf::before,.rf::after{content:'';flex-shrink:0;width:12px;height:1px;background:var(--t4)}
+.ph{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:var(--bg);border-bottom:1px solid var(--bd);padding:12px 16px;display:none;align-items:center;justify-content:space-between;z-index:998}.ph.on{display:flex}
+.ph-b{width:34px;height:34px;display:flex;align-items:center;justify-content:center;color:var(--t2);cursor:pointer;font-size:20px}
+.ph-t{font-size:15px;font-weight:700}
+.bs{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:14px;margin-bottom:10px;cursor:pointer}.bs:hover{border-color:var(--bdh)}
+.bs-h{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.bs-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0}
+.bs-n{font-size:13px;font-weight:600;flex:1}.bs-t{font-size:11px;color:var(--t3)}
+.bs-c{font-size:13px;color:var(--t2);margin-bottom:8px;line-height:1.6}
+.bs-ft{display:flex;gap:16px;font-size:11px;color:var(--t3)}
+.stp{display:flex;justify-content:center;gap:8px;margin-bottom:24px}.stp-i{width:40px;height:4px;border-radius:2px;background:var(--t4)}.stp-i.a{background:var(--bl)}
+.gcard{min-width:100px;background:var(--bg2);border:1px solid var(--bd);border-radius:14px;padding:14px;text-align:center;cursor:pointer;flex-shrink:0}.gcard:hover{border-color:var(--bdh)}
+.px{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:14px;margin-bottom:10px;border-left:3px solid var(--go)}
+.mi{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--bd);cursor:pointer}.mi:last-child{border-bottom:none}
+.noti{display:flex;gap:12px;padding:14px 0;border-bottom:1px solid var(--bd)}
+.noti-ico{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.noti-body{flex:1}.noti-title{font-size:13px;font-weight:600}.noti-desc{font-size:11px;color:var(--t2);margin-top:2px}.noti-time{font-size:10px;color:var(--t3);margin-top:4px}
+.toggle{width:44px;height:24px;border-radius:12px;background:var(--t4);position:relative;cursor:pointer;transition:background .2s}.toggle.on{background:var(--bl)}.toggle::after{content:'';position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left .2s}.toggle.on::after{left:22px}
+.pr{display:flex;align-items:center;gap:10px;padding:14px;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);margin-bottom:8px;cursor:pointer}
+.pr:hover{border-color:var(--bdh)}
+.av{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0}
+/* Like button */
+.like-btn{cursor:pointer;user-select:none;transition:color .2s}.like-btn.liked{color:var(--rd)!important}
+.like-btn.liked::before{content:'❤️ '}
+/* Chat bubbles */
+.chat-list{display:flex;flex-direction:column;gap:10px;padding-bottom:70px}
+.chat-row{display:flex;gap:8px;max-width:85%}
+.chat-row.me{flex-direction:row-reverse;margin-left:auto}
+.chat-bubble{padding:10px 14px;border-radius:var(--rl);font-size:13px;line-height:1.5;max-width:100%}
+.chat-row:not(.me) .chat-bubble{background:var(--bg3);color:var(--t)}
+.chat-row.me .chat-bubble{background:var(--bl);color:#fff}
+.chat-time{text-align:center;font-size:10px;color:var(--t3);margin:6px 0}
+/* Fixed reply bar */
+.reply-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:var(--bg2);border-top:1px solid var(--bd);padding:8px 12px;display:flex;gap:8px;align-items:center;z-index:997}
+.reply-bar input{flex:1;background:var(--bg3);border:1px solid var(--bd);color:var(--t);padding:10px 14px;border-radius:var(--rf);font-size:13px;font-family:var(--f);outline:none}
+.reply-bar input::placeholder{color:var(--t3)}
+.reply-bar button{background:var(--gd);color:#fff;border:none;padding:10px 18px;border-radius:var(--rf);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--f)}
+/* Video player */
+.vid-area{width:100%;aspect-ratio:16/9;background:#000;border-radius:var(--rl);overflow:hidden;position:relative;margin-bottom:12px}
+.vid-play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;cursor:pointer;background:rgba(0,0,0,.3)}
+.vid-play::after{content:'▶';font-size:48px;color:rgba(255,255,255,.8)}
+.vid-play.playing::after{content:'⏸'}
+.vid-ctrl{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:rgba(0,0,0,.6);position:absolute;bottom:0;left:0;right:0}
+.vid-ctrl span{font-size:11px;color:rgba(255,255,255,.8)}
+.vid-prog{flex:1;height:3px;background:rgba(255,255,255,.2);border-radius:2px;margin:0 8px;cursor:pointer}
+.vid-prog>div{height:100%;background:var(--bl);border-radius:2px;width:35%}
+/* Live chat */
+.live-chat{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:12px;max-height:200px;overflow-y:auto;margin-bottom:10px}
+.live-msg{display:flex;gap:6px;margin-bottom:8px;font-size:12px;line-height:1.4}
+.live-msg-n{color:var(--bl);font-weight:600;white-space:nowrap}
+.live-msg-t{color:var(--t2)}
+/* Code editor style */
+.code-editor{background:#0a0e17;border:1px solid var(--bd);border-radius:var(--rl);overflow:hidden}
+.code-toolbar{display:flex;gap:8px;padding:8px 12px;background:var(--bg3);border-bottom:1px solid var(--bd);font-size:11px;color:var(--t3)}
+.code-editor textarea{width:100%;background:transparent;border:none;color:var(--cy);font-family:'Courier New',monospace;font-size:12px;padding:12px;outline:none;resize:none;min-height:200px;line-height:1.6}
+/* Team card */
+.team-card{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:14px;margin-bottom:10px}
+.team-members{display:flex;gap:-8px;margin:8px 0}
+.team-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;border:2px solid var(--bg2);margin-left:-6px}
+.team-av:first-child{margin-left:0}
+/* Skill tag editable */
+.skill-tag{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:var(--rf);font-size:11px;border:1px solid var(--bl);color:var(--bl);background:var(--bld);cursor:default;margin:3px}
+.skill-tag .del{cursor:pointer;font-size:14px;line-height:1;color:var(--t3)}
+.skill-add{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:var(--rf);font-size:11px;border:1px dashed var(--t4);color:var(--t3);cursor:pointer;margin:3px}
+/* Grade result */
+.grade-circle{width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;margin:0 auto 12px}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="ts" id="toast"></div>
+<div id="M">
+
+<!-- ===== TAB0: 发现 ===== -->
+<div class="P on" id="p-disc">
+<div style="padding:14px 0 8px">
+<div style="font-size:22px;font-weight:800">蓝血菁英</div>
+<div style="font-size:11px;color:var(--t3)">发现 · <span style="color:var(--cy)">超级个体</span></div>
+</div>
+<div style="position:relative;margin-bottom:14px">
+<div style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--t3)">🔍</div>
+<input class="sr" placeholder="搜索小组、帖子、任务…">
+</div>
+<div class="bn"><div class="bn-o">
+<div class="tg" style="background:var(--rd);color:#fff;margin-bottom:4px;width:fit-content">📢 公告</div>
+<div style="font-size:16px;font-weight:800">新学员注册送50积分</div>
+<div style="font-size:11px;color:var(--t2)">完成任务首单额外奖励100积分 · 限时活动</div>
+</div></div>
+
+<div class="sh">🏷️ 我的兴趣小组 <span style="font-size:10px;color:var(--t3);font-weight:400">（已加入 2/3）</span></div>
+<div style="display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;margin-bottom:16px">
+<div class="gcard" onclick="G('group1')" style="border-color:var(--bdh)"><div style="font-size:28px;margin-bottom:6px">🤖</div><div style="font-size:13px;font-weight:700">AI实战</div><div style="font-size:10px;color:var(--t3);margin-top:2px">128人 · 已加入</div></div>
+<div class="gcard" onclick="G('group3')" style="border-color:var(--bdh)"><div style="font-size:28px;margin-bottom:6px">🔗</div><div style="font-size:13px;font-weight:700">LangChain</div><div style="font-size:10px;color:var(--t3);margin-top:2px">45人 · 已加入</div></div>
+<div class="gcard" id="gcard-group2" onclick="joinGroup(this,'group2','📊','数据采集','86人')"><div style="font-size:28px;margin-bottom:6px">📊</div><div style="font-size:13px;font-weight:700">数据采集</div><div style="font-size:10px;color:var(--go);margin-top:2px" class="join-status">86人 · 加入</div></div>
+<div class="gcard" id="gcard-group4" onclick="joinGroup(this,'group4','📱','全栈开发','62人')"><div style="font-size:28px;margin-bottom:6px">📱</div><div style="font-size:13px;font-weight:700">全栈开发</div><div style="font-size:10px;color:var(--go);margin-top:2px" class="join-status">62人 · 加入</div></div>
+<div class="gcard" id="gcard-group5" onclick="joinGroup(this,'group5','⚡','量化交易','34人')"><div style="font-size:28px;margin-bottom:6px">⚡</div><div style="font-size:13px;font-weight:700">量化交易</div><div style="font-size:10px;color:var(--go);margin-top:2px" class="join-status">34人 · 加入</div></div>
+<div class="gcard" id="gcard-group6" onclick="joinGroup(this,'group6','🎨','AI绘画','91人')"><div style="font-size:28px;margin-bottom:6px">🎨</div><div style="font-size:13px;font-weight:700">AI绘画</div><div style="font-size:10px;color:var(--go);margin-top:2px" class="join-status">91人 · 加入</div></div>
+</div>
+
+<div class="C" style="background:linear-gradient(135deg,#0d1a2f,#162240);cursor:pointer;padding:14px 16px" onclick="switchTab(null,2)">
+<div style="display:flex;justify-content:space-between;align-items:center">
+<div><div style="font-size:11px;color:var(--go);font-weight:600">🎯 热门任务</div><div style="font-size:15px;font-weight:700;margin-top:4px">AI客服助手配置</div><div style="font-size:11px;color:var(--t2);margin-top:2px">到手 ¥6,800 · L2起接 · 剩余3名</div></div>
+<div style="color:var(--bl);font-size:13px;font-weight:600">查看全部 →</div>
+</div></div>
+
+<div class="sh" style="margin-top:4px">🌟 超级个体</div>
+<div class="pr" onclick="G('profile1')"><div class="av" style="width:42px;height:42px;background:linear-gradient(135deg,#F5A623,#FF6B6B);font-size:15px;color:#fff">云</div><div style="flex:1"><div><span style="font-size:12.5px;font-weight:600">张云飞</span> <span style="color:var(--bl);font-size:9.5px;font-weight:700">VERIFIED</span></div><div style="font-size:10px;color:var(--t2)">人工智能 | 清华大学</div><div style="font-size:9px;color:var(--t3);margin-top:1px">#Python #NLP #模型训练 #LLM</div></div><div style="color:var(--t4)">›</div></div>
+<div class="pr" onclick="G('profile2')"><div class="av" style="width:42px;height:42px;background:linear-gradient(135deg,#8B5CF6,#3B82F6);font-size:15px;color:#fff">艾</div><div style="flex:1"><div><span style="font-size:12.5px;font-weight:600">李艾米</span> <span style="color:var(--bl);font-size:9.5px;font-weight:700">VERIFIED</span></div><div style="font-size:10px;color:var(--t2)">量化金融 | 北京理工大学</div><div style="font-size:9px;color:var(--t3);margin-top:1px">#Java #Spring #数据分析</div></div><div style="color:var(--t4)">›</div></div>
+<div class="pr" onclick="G('profile3')"><div class="av" style="width:42px;height:42px;background:linear-gradient(135deg,#00D4AA,#1890FF);font-size:15px;color:#fff">浩</div><div style="flex:1"><div><span style="font-size:12.5px;font-weight:600">王浩然</span> <span style="color:var(--bl);font-size:9.5px;font-weight:700">VERIFIED</span></div><div style="font-size:10px;color:var(--t2)">软件工程 | 复旦大学</div><div style="font-size:9px;color:var(--t3);margin-top:1px">#React #Vue #Node.js</div></div><div style="color:var(--t4)">›</div></div>
+<div class="pr" onclick="G('profile1')"><div class="av" style="width:42px;height:42px;background:linear-gradient(135deg,#EC4899,#F59E0B);font-size:15px;color:#fff">静</div><div style="flex:1"><div><span style="font-size:12.5px;font-weight:600">赵静怡</span> <span style="color:var(--bl);font-size:9.5px;font-weight:700">VERIFIED</span></div><div style="font-size:10px;color:var(--t2)">产品设计 | 浙江大学</div><div style="font-size:9px;color:var(--t3);margin-top:1px">#Figma #用户研究 #B端产品</div></div><div style="color:var(--t4)">›</div></div>
+<div class="pr" onclick="G('profile1')"><div class="av" style="width:42px;height:42px;background:linear-gradient(135deg,#06D6A0,#118AB2);font-size:15px;color:#fff">陈</div><div style="flex:1"><div><span style="font-size:12.5px;font-weight:600">陈明远</span> <span style="color:var(--bl);font-size:9.5px;font-weight:700">VERIFIED</span></div><div style="font-size:10px;color:var(--t2)">全栈开发 | 中科院</div><div style="font-size:9px;color:var(--t3);margin-top:1px">#Go #Kubernetes #微服务</div></div><div style="color:var(--t4)">›</div></div>
+</div>
+
+<!-- ===== TAB1: 成长 ===== -->
+<div class="P" id="p-grow">
+<div style="padding:14px 0 8px"><div style="font-size:22px;font-weight:800">成长</div></div>
+<div class="bn"><div class="bn-o"><div class="tg" style="background:var(--bl);color:#fff;margin-bottom:4px;width:fit-content" id="bTag">精品课程</div><div style="font-size:18px;font-weight:800" id="bTi">零基础 AIGC 实战课程</div><div style="font-size:11px;color:var(--t2)" id="bSt">从 Prompt 到本地化部署全流程</div></div></div>
+<div class="st" id="gTabs"><div class="a" onclick="SG('c')">精品课程</div><div onclick="SG('h')">黑客松</div><div onclick="SG('j')">AI岗位(CAIO)</div></div>
+
+<!-- 精品课程Tab -->
+<div id="gc">
+<div style="font-size:13px;font-weight:700;margin-bottom:8px">核心成长专题</div>
+<div style="display:flex;align-items:center;gap:12px;padding:16px;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);margin-bottom:10px;cursor:pointer" onclick="G('course1')">
+<div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#1890FF,#764ba2);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">🤖</div>
+<div style="flex:1"><div style="font-size:14px;font-weight:600">Python爬虫与数据采集</div><div style="font-size:11px;color:var(--t2);margin-top:2px">8章节 · 65%进度 · +60积分</div><div class="pb" style="margin-top:6px"><div style="width:65%;background:var(--gd)"></div></div></div>
+<div style="color:var(--bl);font-size:12px;font-weight:600">继续 ▶</div></div>
+<div style="display:flex;align-items:center;gap:12px;padding:16px;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);margin-bottom:10px;cursor:pointer" onclick="G('course1')">
+<div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#F5A623,#FF6B6B);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">📊</div>
+<div style="flex:1"><div style="font-size:14px;font-weight:600">数据分析与可视化</div><div style="font-size:11px;color:var(--t2);margin-top:2px">12章节 · 33%进度 · +80积分</div><div class="pb" style="margin-top:6px"><div style="width:33%;background:var(--go)"></div></div></div>
+<div style="color:var(--bl);font-size:12px;font-weight:600">继续 ▶</div></div>
+<div style="display:flex;align-items:center;gap:12px;padding:16px;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);margin-bottom:10px;cursor:pointer">
+<div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#00D4AA,#1890FF);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">🧠</div>
+<div style="flex:1"><div style="font-size:14px;font-weight:600">AI Prompt工程</div><div style="font-size:11px;color:var(--t2);margin-top:2px">6章节 · 100% · +50积分</div><div class="pb" style="margin-top:6px"><div style="width:100%;background:var(--cy)"></div></div></div>
+<div style="color:var(--cy);font-size:12px;font-weight:600">已完成 ✓</div></div>
+
+<div style="font-size:13px;font-weight:700;margin:16px 0 8px">全部课程</div>
+<div class="C" style="padding:14px;cursor:pointer" onclick="G('course1')"><div style="display:flex;align-items:center;gap:12px"><div style="width:44px;height:44px;border-radius:12px;background:var(--bld);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">💻</div><div style="flex:1"><div style="font-size:14px;font-weight:600">本地化部署架构实战</div><div style="font-size:11px;color:var(--t3)">中级 · 12课时 · 342人学习</div></div><div style="color:var(--t3)">▶</div></div></div>
+<div class="C" style="padding:14px;cursor:pointer"><div style="display:flex;align-items:center;gap:12px"><div style="width:44px;height:44px;border-radius:12px;background:var(--cyd);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">🧠</div><div style="flex:1"><div style="font-size:14px;font-weight:600">企业级 RAG 方案精讲</div><div style="font-size:11px;color:var(--t3)">高级 · 8课时 · 128人学习</div></div><div style="color:var(--t3)">▶</div></div></div>
+
+<div style="font-size:13px;font-weight:700;margin:16px 0 8px">📝 待提交作业</div>
+<div class="C" style="padding:14px"><div style="display:flex;align-items:center;justify-content:space-between"><div><div style="font-size:13px;font-weight:600">Python循环与函数作业</div><div style="font-size:11px;color:var(--rd);margin-top:2px">⚠ 截止 05-15</div></div><button class="bt bp" style="padding:6px 16px;font-size:11px" onclick="G('assignment1')">提交</button></div></div>
+<div class="C" style="padding:14px"><div style="display:flex;align-items:center;justify-content:space-between"><div><div style="font-size:13px;font-weight:600">数据采集脚本设计</div><div style="font-size:11px;color:var(--go);margin-top:2px">待批改</div></div><button class="bt bo" style="padding:6px 16px;font-size:11px" onclick="G('gradeResult')">查看</button></div></div>
+</div>
+
+<!-- 黑客松Tab -->
+<div id="gh" style="display:none">
+<div class="C" style="background:linear-gradient(135deg,rgba(24,144,255,.08),rgba(0,212,170,.06));border-color:var(--bdh)">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px"><div style="font-size:32px">🏆</div><div><div style="font-size:15px;font-weight:800">蓝血春季黑客松 V2.0</div><div style="font-size:10.5px;color:var(--t2);margin-top:2px">聚焦"超级个体项目商业化"</div></div></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px"><div style="text-align:center;padding:12px;background:var(--bg);border-radius:10px"><div style="font-size:9px;color:var(--t3)">奖金池</div><div style="font-size:20px;font-weight:800;color:var(--cy)">¥100,000</div></div><div style="text-align:center;padding:12px;background:var(--bg);border-radius:10px"><div style="font-size:9px;color:var(--t3)">名额</div><div style="font-size:20px;font-weight:800">仅限 20 组</div></div></div>
+<button class="bt bp bf" onclick="G('hackathon1')">立即认领参赛</button>
+</div>
+<div class="C"><div class="sh">📋 赛事日程</div>
+<div style="display:flex;flex-direction:column;gap:7px">
+<div style="display:flex;align-items:center;gap:8px"><div style="width:7px;height:7px;border-radius:50%;background:var(--cy);flex-shrink:0"></div><div style="font-size:11.5px"><b>03/01-03/07</b>：组队报名</div></div>
+<div style="display:flex;align-items:center;gap:8px"><div style="width:7px;height:7px;border-radius:50%;background:var(--bl);flex-shrink:0"></div><div style="font-size:11.5px"><b>03/08-03/21</b>：开发冲刺</div></div>
+<div style="display:flex;align-items:center;gap:8px"><div style="width:7px;height:7px;border-radius:50%;background:var(--go);flex-shrink:0"></div><div style="font-size:11.5px"><b>03/22-03/23</b>：Demo Day</div></div>
+<div style="display:flex;align-items:center;gap:8px"><div style="width:7px;height:7px;border-radius:50%;background:var(--rd);flex-shrink:0"></div><div style="font-size:11.5px"><b>03/24</b>：颁奖 & CAIO内推</div></div>
+</div></div>
+<div class="C"><div class="sh">🏆 往届冠军项目</div>
+<div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--bd)">
+<div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#F5A623,#FF6B6B);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">🥇</div>
+<div style="flex:1"><div style="font-size:13px;font-weight:600">AutoPilot Agent</div><div style="font-size:11px;color:var(--t2)">自动化AI Agent调度平台 · 团队：星辰组</div><div style="font-size:10px;color:var(--cy);margin-top:2px">奖金 ¥50,000 · 已获天使轮</div></div></div>
+</div>
+</div>
+
+<!-- AI岗位(CAIO)Tab -->
+<div id="gj" style="display:none">
+<div class="C" onclick="G('job1')" style="cursor:pointer">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span class="tg" style="background:var(--rd);color:#fff">CAIO需求</span><span style="font-size:15px;font-weight:800;color:var(--cy)">¥50k+</span></div>
+<div style="font-size:14px;font-weight:700;margin-bottom:3px">CAIO 首席AI官候选人内推</div>
+<div style="font-size:11px;color:var(--t2);line-height:1.6">为某独角兽企业寻访首席AI官</div></div>
+<div class="C" onclick="G('job1')" style="cursor:pointer">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span class="tg" style="background:var(--bl);color:#fff">企业需求</span><span style="font-size:15px;font-weight:800;color:var(--cy)">¥35-60k</span></div>
+<div style="font-size:14px;font-weight:700;margin-bottom:3px">AI产品总监 — 大模型方向</div></div>
+</div>
+</div>
+
+<!-- ===== TAB2: 任务 ===== -->
+<div class="P" id="p-task">
+<div style="padding:14px 0 8px"><div style="font-size:22px;font-weight:800">任务</div></div>
+<div class="st" id="taskMainTab">
+<div class="a" onclick="switchTaskTab(this,0)">任务大厅</div>
+<div onclick="switchTaskTab(this,1)">我的任务</div>
+</div>
+<div id="taskHall">
+<div style="position:relative;margin-bottom:10px"><div style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--t3)">🔍</div><input class="sr" placeholder="搜索任务名称、技能要求…"></div>
+<div class="pl" id="filterPills">
+<div class="a" data-cat="全部" onclick="filterTasks(this)">全部</div>
+<div data-cat="Agent配置" onclick="filterTasks(this)">Agent配置</div>
+<div data-cat="自动化脚本" onclick="filterTasks(this)">自动化脚本</div>
+<div data-cat="流程梳理" onclick="filterTasks(this)">流程梳理</div>
+<div data-cat="报告生成" onclick="filterTasks(this)">报告生成</div>
+<div data-cat="数据处理" onclick="filterTasks(this)">数据处理</div>
+</div>
+
+<div id="taskCards">
+<div class="tc" data-category="Agent配置" onclick="G('taskDetail1')"><div class="tc-h"><div style="flex:1"><div style="font-size:14px;font-weight:600">AI客服助手配置</div></div><div style="font-size:14px;font-weight:700;color:var(--go)">¥6,800</div></div><div style="font-size:11px;color:var(--t2);margin-bottom:6px">配置企业微信客服AI助手</div><div class="tc-ft"><div><span class="lv l2">L2起接</span><span style="color:var(--cy)">剩余3名</span></div><span>截止 06-15</span></div><div style="display:flex;gap:4px;margin-top:8px"><span class="ch">Python</span><span class="ch">企业微信</span><span class="ch">NLP</span></div></div>
+
+<div class="tc" data-category="自动化脚本" onclick="G('taskDetail1')"><div class="tc-h"><div style="flex:1"><div style="font-size:14px;font-weight:600">自动化数据采集脚本</div></div><div style="font-size:14px;font-weight:700;color:var(--go)">¥2,975</div></div><div style="font-size:11px;color:var(--t2);margin-bottom:6px">爬取竞品官网产品信息</div><div class="tc-ft"><div><span class="lv l1">L1起接</span><span style="color:var(--cy)">剩余5名</span></div><span>截止 06-20</span></div><div style="display:flex;gap:4px;margin-top:8px"><span class="ch">Python</span><span class="ch">Selenium</span></div></div>
+
+<div class="tc" data-category="Agent配置" onclick="G('taskDetail1')"><div class="tc-h"><div style="flex:1"><div style="font-size:14px;font-weight:600">AIGC爆款文案生成系统</div></div><div style="font-size:14px;font-weight:700;color:var(--go)">¥10,200</div></div><div style="font-size:11px;color:var(--t2);margin-bottom:6px">基于GPT-4搭建文案自动生成平台</div><div class="tc-ft"><div><span class="lv l3">L3起接</span><span>剩余2名</span></div><span style="color:var(--rd)">截止 06-10</span></div><div style="display:flex;gap:4px;margin-top:8px"><span class="ch">GPT-4</span><span class="ch">Prompt</span></div></div>
+
+<div class="tc" data-category="流程梳理" onclick="G('taskDetail1')"><div class="tc-h"><div style="flex:1"><div style="font-size:14px;font-weight:600">RPA自动化流程设计</div></div><div style="font-size:14px;font-weight:700;color:var(--go)">¥5,525</div></div><div style="font-size:11px;color:var(--t2);margin-bottom:6px">Python+Selenium网页表单自动填写</div><div class="tc-ft"><div><span class="lv l2">L2起接</span><span style="color:var(--cy)">剩余4名</span></div><span>截止 06-25</span></div><div style="display:flex;gap:4px;margin-top:8px"><span class="ch">Python</span><span class="ch">Selenium</span></div></div>
+
+<div class="tc" data-category="报告生成" onclick="G('taskDetail1')"><div class="tc-h"><div style="flex:1"><div style="font-size:14px;font-weight:600">月度经营数据分析报告</div></div><div style="font-size:14px;font-weight:700;color:var(--go)">¥3,570</div></div><div style="font-size:11px;color:var(--t2);margin-bottom:6px">CRM数据清洗、分析、可视化</div><div class="tc-ft"><div><span class="lv l1">L1起接</span><span style="color:var(--cy)">剩余6名</span></div><span>截止 06-30</span></div></div>
+
+<div class="tc" data-category="数据处理" onclick="G('taskDetail1')"><div class="tc-h"><div style="flex:1"><div style="font-size:14px;font-weight:600">简历智能筛选系统</div></div><div style="font-size:14px;font-weight:700;color:var(--go)">¥15,300</div></div><div style="font-size:11px;color:var(--t2);margin-bottom:6px">NLP+关键词匹配简历自动评分</div><div class="tc-ft"><div><span class="lv l3">L3起接</span><span style="color:var(--cy)">剩余2名</span></div><span>截止 07-05</span></div></div>
+
+<div class="tc" data-category="报告生成" onclick="G('taskDetail1')"><div class="tc-h"><div style="flex:1"><div style="font-size:14px;font-weight:600">小红书内容分析报告</div></div><div style="font-size:14px;font-weight:700;color:var(--go)">¥4,250</div></div><div style="font-size:11px;color:var(--t2);margin-bottom:6px">抓取分析1000篇小红书爆款笔记</div><div class="tc-ft"><div><span class="lv l2">L2起接</span><span style="color:var(--rd)">名额已满</span></div><span>截止 06-18</span></div></div>
+</div>
+</div>
+
+<div id="myTaskArea" style="display:none">
+<div class="tc" style="border-left:3px solid var(--rd)" onclick="G('taskExec1')">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div style="font-size:14px;font-weight:600">AI客服助手配置</div><span class="sb rd">⚠ 重点关注</span></div>
+<div style="font-size:12px;color:var(--t2);margin-bottom:8px">云智科技 · 到手 ¥6,800</div>
+<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--t3);margin-bottom:4px"><span>第3节点 / 共5节点</span><span style="color:var(--rd)">逾期2天</span></div><div class="pb"><div style="width:50%;background:var(--rd)"></div></div></div>
+<div style="margin-top:10px;display:flex;gap:8px"><button class="bt bp" style="flex:1;padding:8px" onclick="event.stopPropagation();G('milestone1')">提交里程碑</button><button class="bt bo" style="flex:1;padding:8px">查看反馈</button></div>
+</div>
+</div>
+</div>
+
+<!-- ===== TAB3: 我的 ===== -->
+<div class="P" id="p-mine">
+<div style="width:calc(100% + 32px);margin:0 -16px;height:140px;background:linear-gradient(135deg,#1a2a4a,#2a1a3a,#1a3a2a);position:relative">
+<div style="position:absolute;bottom:-30px;left:50%;transform:translateX(-50%)"><div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#4ECDC4,#556270);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:#fff;border:3px solid var(--bg)">张</div></div>
+</div>
+<div style="text-align:center;margin-top:40px;margin-bottom:12px">
+<div style="font-size:17px;font-weight:800">张云飞</div>
+<div style="font-size:10.5px;color:var(--t2);margin-top:2px">清华大学 · 计算机科学 · <span style="color:var(--go);font-weight:600">L3</span></div>
+</div>
+<div class="C"><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;text-align:center">
+<div><div style="font-size:20px;font-weight:700;color:var(--bl)">12</div><div style="font-size:11px;color:var(--t3)">已完成任务</div></div>
+<div><div style="font-size:20px;font-weight:700;color:var(--go)">487</div><div style="font-size:11px;color:var(--t3)">当前积分</div></div>
+<div><div style="font-size:20px;font-weight:700;color:var(--cy)">98</div><div style="font-size:11px;color:var(--t3)">信誉评分</div></div>
+</div></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+<div class="C" style="padding:16px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><span style="font-size:10.5px;color:var(--t3)">账户余额</span><span style="font-size:13px">💰</span></div><div style="font-size:24px;font-weight:800;color:var(--cy)">¥24,600</div><div style="font-size:10.5px;color:var(--go);margin-top:3px" onclick="G('earnings')">待结算 ¥3,200 →</div></div>
+<div class="C" style="padding:16px"><div style="font-size:10.5px;color:var(--t3);margin-bottom:4px">成长等级</div><div style="font-size:24px;font-weight:800;color:var(--go)">L3</div><div class="pb" style="margin-top:5px;height:4px"><div style="width:81%;background:var(--go);height:100%;border-radius:3px"></div></div></div>
+</div>
+<div class="C" style="padding:0">
+<div class="mi" onclick="G('earnings')"><div style="display:flex;align-items:center;gap:10px"><span style="font-size:18px">💰</span><span>收益明细</span></div><span style="color:var(--t4)">›</span></div>
+<div class="mi" onclick="G('settings')"><div style="display:flex;align-items:center;gap:10px"><span style="font-size:18px">⚙️</span><span>设置</span></div><span style="color:var(--t4)">›</span></div>
+<div class="mi" onclick="G('notifications')"><div style="display:flex;align-items:center;gap:10px"><span style="font-size:18px">🔔</span><span>消息通知</span><span style="background:var(--rd);color:#fff;font-size:10px;padding:1px 6px;border-radius:10px;margin-left:4px">3</span></div><span style="color:var(--t4)">›</span></div>
+</div>
+</div>
+
+<!-- ===== 子页面: 小组BBS ===== -->
+<div class="P" id="p-group1">
+<div class="ph on"><div class="ph-b" onclick="back('disc')">←</div><div class="ph-t">AI实战小组</div><div style="width:34px;text-align:center;font-size:18px;cursor:pointer">⋮</div></div>
+<div style="padding:56px 16px 24px">
+<div class="C" style="text-align:center">
+<div style="font-size:28px;margin-bottom:8px">🤖</div>
+<div style="font-size:16px;font-weight:700">AI实战小组</div>
+<div style="font-size:12px;color:var(--t2);margin-top:4px">探索AI应用落地，从0到1实战</div>
+<div style="display:flex;justify-content:center;gap:16px;margin-top:8px;font-size:11px;color:var(--t3)"><span>👥 128人</span><span>组长: 王浩然 L3</span></div>
+<div style="display:flex;gap:10px;justify-content:center;margin-top:12px"><button class="bt bp" style="padding:8px 20px;font-size:12px">已加入 ✓</button><button class="bt bo" style="padding:8px 20px;font-size:12px" onclick="toast('邀请链接已复制')">邀请</button></div>
+</div>
+<div class="st" id="bbsTab">
+<div class="a" onclick="switchBBSTab(this,0)">话题</div>
+<div onclick="switchBBSTab(this,1)">任务</div>
+<div onclick="switchBBSTab(this,2)">经验分享</div>
+<div onclick="switchBBSTab(this,3)">活动</div>
+</div>
+<div id="bbs0">
+<div class="bs" style="border-left:3px solid var(--go)" onclick="G('post1')"><div class="bs-h"><div class="bs-av" style="background:linear-gradient(135deg,#F5A623,#FF6B6B)">浩</div><div><div class="bs-n">王浩然 <span class="lv l3">L3</span> · 组长</div><div class="bs-t">📌 置顶 · 3天前</div></div></div><div class="bs-c">【新人必读】AI实战小组规则和入门指南，加入必看！</div><div class="bs-ft"><span class="like-btn" onclick="event.stopPropagation();toggleLike(this,67)">🤍 67</span><span>💬 42</span><span>👁 1.5k</span></div></div>
+<div class="bs" onclick="G('post1')"><div class="bs-h"><div class="bs-av" style="background:linear-gradient(135deg,#00D4AA,#1890FF)">陈</div><div><div class="bs-n">陈明远 <span class="lv l3">L3</span></div><div class="bs-t">5小时前</div></div></div><div class="bs-c">LangChain RAG召回率很低怎么办？</div><div class="bs-ft"><span class="like-btn" onclick="event.stopPropagation();toggleLike(this,8)">🤍 8</span><span>💬 15</span><span>👁 567</span></div></div>
+<div class="bs" onclick="G('post1')"><div class="bs-h"><div class="bs-av" style="background:linear-gradient(135deg,#8B5CF6,#3B82F6)">艾</div><div><div class="bs-n">李艾米 <span class="lv l2">L2</span></div><div class="bs-t">昨天</div></div></div><div class="bs-c">GPT-4 Function Call实战踩坑分享</div><div class="bs-ft"><span class="like-btn" onclick="event.stopPropagation();toggleLike(this,23)">🤍 23</span><span>💬 12</span><span>👁 890</span></div></div>
+</div>
+<div id="bbs1" style="display:none">
+<div class="bs"><div class="bs-h"><div class="bs-av" style="background:linear-gradient(135deg,#F5A623,#FF6B6B)">浩</div><div><div class="bs-n">王浩然 <span class="lv l3">L3</span></div><div class="bs-t">2小时前</div></div><div class="tg" style="background:var(--bld);color:var(--bl)">招募</div></div><div class="bs-c">【招募】寻找Python数据采集伙伴，一起接电商竞品监控项目</div><div class="bs-ft"><span class="like-btn" onclick="event.stopPropagation();toggleLike(this,12)">🤍 12</span><span>💬 8</span><span>👁 234</span></div></div>
+<div class="bs"><div class="bs-h"><div class="bs-av" style="background:linear-gradient(135deg,#00D4AA,#1890FF)">陈</div><div><div class="bs-n">陈明远 <span class="lv l3">L3</span></div><div class="bs-t">1天前</div></div><div class="tg" style="background:var(--bld);color:var(--bl)">招募</div></div><div class="bs-c">【组队】接一个AIGC文案生成项目，需要前后端各1人</div><div class="bs-ft"><span class="like-btn" onclick="event.stopPropagation();toggleLike(this,5)">🤍 5</span><span>💬 3</span><span>👁 120</span></div></div>
+</div>
+<div id="bbs2" style="display:none">
+<div class="bs"><div class="bs-h"><div class="bs-av" style="background:linear-gradient(135deg,#8B5CF6,#3B82F6)">艾</div><div><div class="bs-n">李艾米 <span class="lv l2">L2</span></div><div class="bs-t">昨天</div></div><div class="tg" style="background:var(--cyd);color:var(--cy)">分享</div></div><div class="bs-c">零基础学AIGC 30天完整路线图</div><div class="bs-ft"><span class="like-btn" onclick="event.stopPropagation();toggleLike(this,45)">🤍 45</span><span>💬 23</span><span>👁 1.2k</span></div></div>
+<div class="bs"><div class="bs-h"><div class="bs-av" style="background:linear-gradient(135deg,#F5A623,#FF6B6B)">浩</div><div><div class="bs-n">王浩然 <span class="lv l3">L3</span></div><div class="bs-t">3天前</div></div><div class="tg" style="background:var(--cyd);color:var(--cy)">分享</div></div><div class="bs-c">我第一次独立完成AI客服项目的复盘</div><div class="bs-ft"><span class="like-btn" onclick="event.stopPropagation();toggleLike(this,34)">🤍 34</span><span>💬 18</span><span>👁 780</span></div></div>
+</div>
+<div id="bbs3" style="display:none">
+<div class="bs"><div class="bs-h"><div class="bs-av" style="background:linear-gradient(135deg,#1890FF,#00D4AA)">云</div><div><div class="bs-n">张云飞 <span class="lv l3">L3</span></div><div class="bs-t">📅 05-20 周三 19:00</div></div><div class="tg" style="background:var(--prd);color:var(--pr)">线下</div></div><div class="bs-c">【北京】AI实战线下Code Review聚会，限额20人</div><div style="font-size:11px;color:var(--t3);margin-top:4px">📍 望京SOHO · 已报名 12/20</div><div class="bs-ft" style="margin-top:8px"><span class="like-btn" onclick="event.stopPropagation();toggleLike(this,28)">🤍 28</span><span>💬 8</span><button class="bt bp" style="padding:4px 14px;font-size:11px;margin-left:auto" onclick="event.stopPropagation();toast('报名成功！')">报名</button></div></div>
+</div>
+</div>
+</div>
+
+<!-- ===== 子页面: 帖子详情（含固定回复栏） ===== -->
+<div class="P" id="p-post1">
+<div class="ph on"><div class="ph-b" onclick="back('group1')">←</div><div class="ph-t">帖子详情</div><div style="width:34px"></div></div>
+<div style="padding:56px 16px 80px">
+<div class="C">
+<div class="bs-h"><div class="bs-av" style="background:linear-gradient(135deg,#00D4AA,#1890FF)">陈</div><div><div class="bs-n">陈明远 <span class="lv l3">L3</span></div><div class="bs-t">5小时前 · 👁 567</div></div></div>
+<div style="font-size:16px;font-weight:700;margin-bottom:10px">LangChain RAG召回率优化求助</div>
+<div style="font-size:13px;color:var(--t);line-height:1.7;margin-bottom:12px">在做LangChain的RAG实战时遇到一个问题：知识库检索出来的文档相关性很低，有什么提高召回率的技巧吗？<br><br>已经试过：<br>1. 更换embedding模型（text2vec → bge-large），效果提升有限<br>2. 增大chunk_size到1000，但噪音也多了<br>3. 尝试了BM25混合检索，好了一点但还不够</div>
+<div style="display:flex;gap:20px;font-size:12px;color:var(--t3);padding-top:10px;border-top:1px solid var(--bd)"><span class="like-btn" onclick="toggleLike(this,8)">🤍 8</span><span>💬 15</span><span style="cursor:pointer">📎 收藏</span></div>
+</div>
+<div class="sh">回复（<span id="replyCount">3</span>条）</div>
+<div id="replyList">
+<div style="background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:14px;margin-bottom:10px">
+<div class="bs-h"><div class="bs-av" style="background:linear-gradient(135deg,#F5A623,#FF6B6B);width:28px;height:28px;font-size:10px">浩</div><div><div class="bs-n" style="font-size:12px">王浩然 <span class="lv l3">L3</span></div><div class="bs-t">4小时前</div></div></div>
+<div style="font-size:12px;color:var(--t);line-height:1.6">试试把chunk overlap调大一点，另外用bge-large-zh而不是英文版。还有一个技巧：在检索前加一个query改写步骤。</div>
+</div>
+<div style="background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:14px;margin-bottom:10px">
+<div class="bs-h"><div class="bs-av" style="background:linear-gradient(135deg,#8B5CF6,#3B82F6);width:28px;height:28px;font-size:10px">艾</div><div><div class="bs-n" style="font-size:12px">李艾米 <span class="lv l2">L2</span></div><div class="bs-t">2小时前</div></div></div>
+<div style="font-size:12px;color:var(--t);line-height:1.6">推荐看看LlamaIndex的SentenceWindowRetrieval，效果比普通检索好很多。</div>
+</div>
+<div style="background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:14px;margin-bottom:10px">
+<div class="bs-h"><div class="bs-av" style="background:linear-gradient(135deg,#4ECDC4,#556270);width:28px;height:28px;font-size:10px">云</div><div><div class="bs-n" style="font-size:12px">张云飞 <span class="lv l3">L3</span></div><div class="bs-t">1小时前</div></div></div>
+<div style="font-size:12px;color:var(--t);line-height:1.6">我也遇到过类似问题，最后用rerank解决了，推荐Cohere的reranker。</div>
+</div>
+</div>
+</div>
+<!-- Fixed reply bar -->
+<div class="reply-bar" id="replyBar">
+<input id="replyInput" placeholder="写回复…" onkeydown="if(event.key==='Enter')sendReply()">
+<button onclick="sendReply()">发送</button>
+</div>
+</div>
+
+<!-- ===== 子页面: 超级个体详情 ===== -->
+<div class="P" id="p-profile1">
+<div class="ph on"><div class="ph-b" onclick="back('disc')">←</div><div class="ph-t">精英详情</div><div style="width:34px"></div></div>
+<div style="padding:56px 16px 24px">
+<div class="C" style="text-align:center;padding:20px;background:linear-gradient(135deg,rgba(245,166,35,.06),rgba(255,107,107,.04))">
+<div class="av" style="width:66px;height:66px;margin:0 auto 8px;background:linear-gradient(135deg,#F5A623,#FF6B6B);font-size:26px;color:#fff">云</div>
+<div style="font-size:17px;font-weight:800">张云飞</div>
+<div style="font-size:10.5px;color:var(--t2);margin-top:2px">人工智能 · 清华大学 · <span style="color:var(--bl);font-weight:700">VERIFIED</span></div>
+<div style="margin-top:6px;display:flex;justify-content:center;gap:4px;flex-wrap:wrap"><span class="ch">Python</span><span class="ch">NLP</span><span class="ch">模型训练</span><span class="ch">LLM</span></div>
+<div style="margin-top:12px;display:flex;justify-content:center;gap:8px">
+<button class="bt bp" style="font-size:11px;padding:8px 16px" id="connectBtn" onclick="handleConnect(this)">🤝 建立连接</button>
+<button class="bt bo" style="font-size:11px;padding:8px 16px" onclick="G('chat1')">💬 发消息</button>
+</div>
+</div>
+<div class="C"><div class="sh">📋 个人简介</div><div style="font-size:11.5px;color:var(--t2);line-height:1.7">清华大学计算机系，NLP与大模型优化方向。顶会论文12篇，开源项目2k+ Stars。</div></div>
+<div class="C"><div class="sh">🔗 GitHub</div><a href="https://github.com/yunfei-zhang" target="_blank" style="color:var(--bl);text-decoration:none;font-size:13px">github.com/yunfei-zhang ↗</a></div>
+<div class="C"><div class="sh">🏆 成就徽章</div><div style="display:flex;gap:8px;flex-wrap:wrap"><div style="text-align:center;padding:8px;background:var(--bg);border-radius:10px;min-width:60px"><div style="font-size:20px">🥇</div><div style="font-size:8.5px;color:var(--t3);margin-top:2px">黑客松冠军</div></div><div style="text-align:center;padding:8px;background:var(--bg);border-radius:10px;min-width:60px"><div style="font-size:20px">⭐</div><div style="font-size:8.5px;color:var(--t3);margin-top:2px">开源之星</div></div></div></div>
+<div class="C"><div class="sh">📊 技能雷达</div><div style="display:flex;flex-direction:column;gap:5px"><div><div style="display:flex;justify-content:space-between;font-size:10.5px;margin-bottom:2px"><span>Python / PyTorch</span><span style="color:var(--cy)">98%</span></div><div class="pb"><div style="width:98%;background:var(--gd)"></div></div></div><div><div style="display:flex;justify-content:space-between;font-size:10.5px;margin-bottom:2px"><span>NLP / Transformers</span><span style="color:var(--cy)">95%</span></div><div class="pb"><div style="width:95%;background:var(--gd)"></div></div></div><div><div style="display:flex;justify-content:space-between;font-size:10.5px;margin-bottom:2px"><span>LLM Fine-tuning</span><span style="color:var(--cy)">92%</span></div><div class="pb"><div style="width:92%;background:var(--gd)"></div></div></div></div></div>
+</div>
+</div>
+
+<!-- ===== 子页面: 聊天对话 ===== -->
+<div class="P" id="p-chat1">
+<div class="ph on"><div class="ph-b" onclick="back('profile1')">←</div><div class="ph-t">张云飞</div><div style="width:34px"></div></div>
+<div style="padding:56px 16px 80px">
+<div class="chat-time">今天 10:30</div>
+<div class="chat-list" id="chatList">
+<div class="chat-row">
+<div class="av" style="width:32px;height:32px;font-size:11px;background:linear-gradient(135deg,#F5A623,#FF6B6B);color:#fff;flex-shrink:0">云</div>
+<div class="chat-bubble">你好！看到你也对RAG感兴趣，最近在做什么项目？</div>
+</div>
+<div class="chat-row me">
+<div class="chat-bubble">我在做一个企业知识库的RAG系统，召回率一直提不上去 😅</div>
+</div>
+<div class="chat-row">
+<div class="av" style="width:32px;height:32px;font-size:11px;background:linear-gradient(135deg,#F5A623,#FF6B6B);color:#fff;flex-shrink:0">云</div>
+<div class="chat-bubble">我之前也遇到过，建议试试bge-large-zh + rerank的组合方案</div>
+</div>
+<div class="chat-row me">
+<div class="chat-bubble">好的，谢谢！你有相关的代码示例吗？</div>
+</div>
+<div class="chat-row">
+<div class="av" style="width:32px;height:32px;font-size:11px;background:linear-gradient(135deg,#F5A623,#FF6B6B);color:#fff;flex-shrink:0">云</div>
+<div class="chat-bubble">有的，我发你一个GitHub链接，里面有完整的demo 👇</div>
+</div>
+</div>
+</div>
+<div class="reply-bar">
+<input id="chatInput" placeholder="输入消息…" onkeydown="if(event.key==='Enter')sendChat()">
+<button onclick="sendChat()">发送</button>
+</div>
+</div>
+
+<!-- ===== 子页面: 课程视频播放 ===== -->
+<div class="P" id="p-video1">
+<div class="ph on"><div class="ph-b" onclick="back('course1')">←</div><div class="ph-t" id="videoTitle">第4章：反爬与绕过策略</div><div style="width:34px"></div></div>
+<div style="padding:56px 16px 24px">
+<!-- Video area -->
+<div class="vid-area" id="vidArea">
+<div class="vid-play" id="vidPlayBtn" onclick="toggleVideo()"></div>
+<div class="vid-ctrl">
+<span>12:35</span>
+<div class="vid-prog"><div></div></div>
+<span>35:00</span>
+</div>
+</div>
+
+<!-- Course text content -->
+<div class="C">
+<div class="sh" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'" style="cursor:pointer">📖 课程文字说明 ▾</div>
+<div id="courseText">
+<div style="font-size:12px;color:var(--t2);line-height:1.8;margin-bottom:12px">
+本章介绍常见的反爬机制及绕过策略：
+</div>
+<div style="font-size:12px;color:var(--t);line-height:1.8">
+<strong>1. User-Agent检测</strong><br>
+服务器通过检查请求头中的User-Agent来判断是否为爬虫。解决方案：使用fake_useragent库随机生成UA。<br><br>
+<strong>2. IP频率限制</strong><br>
+同一IP短时间内大量请求会被封禁。解决方案：使用代理IP池，控制请求频率。<br><br>
+<strong>3. 验证码</strong><br>
+图形验证码、滑块验证码等。解决方案：OCR识别、selenium模拟操作、第三方打码平台。
+</div>
+</div>
+</div>
+
+<!-- Live chat -->
+<div class="sh">💬 课堂互动（<span id="liveChatCount">12</span>人在线）</div>
+<div class="live-chat" id="liveChat">
+<div class="live-msg"><span class="live-msg-n">李艾米：</span><span class="live-msg-t">老师，IP代理池有推荐的开源项目吗？</span></div>
+<div class="live-msg"><span class="live-msg-n">王浩然：</span><span class="live-msg-t">推荐proxy_pool，GitHub上star最多的</span></div>
+<div class="live-msg"><span class="live-msg-n">赵静怡：</span><span class="live-msg-t">selenium处理滑块验证码的成功率高吗？</span></div>
+<div class="live-msg"><span class="live-msg-n">陈明远：</span><span class="live-msg-t">大概70-80%，复杂的需要配合CV</span></div>
+</div>
+<div style="display:flex;gap:8px;margin-bottom:16px">
+<input id="liveChatInput" style="flex:1;background:var(--bg3);border:1px solid var(--bd);color:var(--t);padding:10px 14px;border-radius:var(--rf);font-size:12px;font-family:var(--f);outline:none" placeholder="说点什么…" onkeydown="if(event.key==='Enter')sendLiveChat()">
+<button class="bt bp" style="padding:10px 16px;font-size:11px" onclick="sendLiveChat()">发送</button>
+</div>
+
+<!-- Navigation -->
+<div style="display:flex;gap:10px">
+<button class="bt bo" style="flex:1;padding:12px" onclick="toast('已到第3章：Selenium爬虫')">⬅ 上一节</button>
+<button class="bt bp" style="flex:1;padding:12px" onclick="toast('进入第5章：Scrapy框架')">下一节 ➡</button>
+</div>
+</div>
+</div>
+
+<!-- ===== 子页面: 课程详情 ===== -->
+<div class="P" id="p-course1">
+<div class="ph on"><div class="ph-b" onclick="back('grow')">←</div><div class="ph-t">课程详情</div><div style="width:34px"></div></div>
+<div style="padding:56px 16px 24px">
+<div class="bn" style="aspect-ratio:16/9"><div class="bn-o"><div style="font-size:17px;font-weight:800">Python爬虫与数据采集</div><div style="font-size:11px;color:var(--t2)">8章节 · 完成得60积分</div></div></div>
+<div class="C"><div class="sh">章节列表</div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--bd);cursor:pointer" onclick="G('video1')"><div style="display:flex;align-items:center;gap:10px"><div style="width:24px;height:24px;border-radius:50%;background:var(--cy);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff">✓</div><span style="font-size:13px;text-decoration:line-through;color:var(--t3)">第1章：环境搭建</span></div><span style="font-size:11px;color:var(--cy)">已完成</span></div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--bd);cursor:pointer" onclick="G('video1')"><div style="display:flex;align-items:center;gap:10px"><div style="width:24px;height:24px;border-radius:50%;background:var(--cy);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff">✓</div><span style="font-size:13px;text-decoration:line-through;color:var(--t3)">第2章：Requests与BS4</span></div><span style="font-size:11px;color:var(--cy)">已完成</span></div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--bd);cursor:pointer" onclick="G('video1')"><div style="display:flex;align-items:center;gap:10px"><div style="width:24px;height:24px;border-radius:50%;background:var(--cy);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff">✓</div><span style="font-size:13px;text-decoration:line-through;color:var(--t3)">第3章：Selenium爬虫</span></div><span style="font-size:11px;color:var(--cy)">已完成</span></div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--bd);cursor:pointer" onclick="G('video1')"><div style="display:flex;align-items:center;gap:10px"><div style="width:24px;height:24px;border-radius:50%;background:var(--bl);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff">4</div><span style="font-size:13px;font-weight:600">第4章：反爬与绕过策略</span></div><span style="font-size:11px;color:var(--bl)">进行中</span></div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--bd);cursor:pointer" onclick="G('video1')"><div style="display:flex;align-items:center;gap:10px"><div style="width:24px;height:24px;border-radius:50%;background:var(--t4);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--bg)">5</div><span style="font-size:13px;color:var(--t3)">第5章：Scrapy框架</span></div><span style="font-size:11px;color:var(--t3)">未开始</span></div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--bd);cursor:pointer" onclick="G('video1')"><div style="display:flex;align-items:center;gap:10px"><div style="width:24px;height:24px;border-radius:50%;background:var(--t4);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--bg)">6</div><span style="font-size:13px;color:var(--t3)">第6章：数据存储与清洗</span></div><span style="font-size:11px;color:var(--t3)">未开始</span></div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--bd);cursor:pointer" onclick="G('video1')"><div style="display:flex;align-items:center;gap:10px"><div style="width:24px;height:24px;border-radius:50%;background:var(--t4);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--bg)">7</div><span style="font-size:13px;color:var(--t3)">第7章：项目实战</span></div><span style="font-size:11px;color:var(--t3)">未开始</span></div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;cursor:pointer" onclick="G('video1')"><div style="display:flex;align-items:center;gap:10px"><div style="width:24px;height:24px;border-radius:50%;background:var(--t4);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--bg)">8</div><span style="font-size:13px;color:var(--t3)">第8章：课程总结</span></div><span style="font-size:11px;color:var(--t3)">未开始</span></div>
+</div>
+<div style="padding:16px 0"><button class="bt bp bf" style="padding:14px" onclick="G('video1')">继续学习第4章</button></div>
+</div>
+</div>
+
+<!-- ===== 子页面: 黑客松组队 ===== -->
+<div class="P" id="p-hackathon1">
+<div class="ph on"><div class="ph-b" onclick="back('grow')">←</div><div class="ph-t">黑客松</div><div style="width:34px"></div></div>
+<div style="padding:56px 16px 24px">
+<div class="C" style="background:linear-gradient(135deg,rgba(24,144,255,.08),rgba(0,212,170,.06));border-color:var(--bdh)">
+<div style="font-size:18px;font-weight:800;margin-bottom:4px">🏆 蓝血春季黑客松 V2.0</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px"><div style="text-align:center;padding:12px;background:var(--bg);border-radius:10px"><div style="font-size:9px;color:var(--t3)">奖金池</div><div style="font-size:20px;font-weight:800;color:var(--cy)">¥100,000</div></div><div style="text-align:center;padding:12px;background:var(--bg);border-radius:10px"><div style="font-size:9px;color:var(--t3)">名额</div><div style="font-size:20px;font-weight:800">20 组</div></div></div>
+</div>
+
+<div class="st" id="hackTab"><div class="a" onclick="switchHackTab(this,0)">已报名队伍</div><div onclick="switchHackTab(this,1)">创建队伍</div><div onclick="switchHackTab(this,2)">提交项目</div></div>
+
+<div id="hk0">
+<div class="team-card">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div style="font-size:14px;font-weight:600">星辰组</div><span class="sb cy">已满 3/3</span></div>
+<div style="font-size:11px;color:var(--t2);margin-bottom:8px">方向：AI Agent调度平台</div>
+<div class="team-members"><div class="team-av" style="background:linear-gradient(135deg,#F5A623,#FF6B6B)">浩</div><div class="team-av" style="background:linear-gradient(135deg,#8B5CF6,#3B82F6)">艾</div><div class="team-av" style="background:linear-gradient(135deg,#00D4AA,#1890FF)">陈</div></div>
+</div>
+<div class="team-card">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div style="font-size:14px;font-weight:600">铁锤组</div><span class="sb db">招募中 2/4</span></div>
+<div style="font-size:11px;color:var(--t2);margin-bottom:8px">方向：可视化RAG编排引擎</div>
+<div class="team-members"><div class="team-av" style="background:linear-gradient(135deg,#EC4899,#F59E0B)">静</div><div class="team-av" style="background:linear-gradient(135deg,#06D6A0,#118AB2)">陈</div></div>
+<button class="bt bp" style="padding:6px 16px;font-size:11px;margin-top:8px" onclick="toast('✅ 已申请加入铁锤组！')">申请加入</button>
+</div>
+<div class="team-card">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div style="font-size:14px;font-weight:600">量子队</div><span class="sb db">招募中 1/4</span></div>
+<div style="font-size:11px;color:var(--t2);margin-bottom:8px">方向：量化交易AI助手</div>
+<div class="team-members"><div class="team-av" style="background:linear-gradient(135deg,#4ECDC4,#556270)">云</div></div>
+<button class="bt bp" style="padding:6px 16px;font-size:11px;margin-top:8px" onclick="toast('✅ 已申请加入量子队！')">申请加入</button>
+</div>
+</div>
+
+<div id="hk1" style="display:none">
+<div class="fm"><div class="fm-l">队伍名称 *</div><input class="fm-i" placeholder="给你的队伍取个名字"></div>
+<div class="fm"><div class="fm-l">项目方向 *</div><input class="fm-i" placeholder="AI Agent / RAG / 数据分析…"></div>
+<div class="fm"><div class="fm-l">队伍描述</div><textarea class="fm-ta" placeholder="简要描述你们的项目和目标…"></textarea></div>
+<div class="fm"><div class="fm-l">邀请队友（输入姓名）</div><input class="fm-i" placeholder="搜索队友…" id="inviteInput">
+<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px" id="invitedMembers"></div>
+</div>
+<button class="bt bp bf" style="padding:14px" onclick="toast('✅ 队伍创建成功！')">创建队伍</button>
+</div>
+
+<div id="hk2" style="display:none">
+<div class="fm"><div class="fm-l">项目名称 *</div><input class="fm-i" placeholder="项目名称"></div>
+<div class="fm"><div class="fm-l">GitHub链接 *</div><input class="fm-i" placeholder="https://github.com/..."></div>
+<div class="fm"><div class="fm-l">Demo视频链接</div><input class="fm-i" placeholder="https://..."></div>
+<div class="fm"><div class="fm-l">PPT附件</div><div class="fm-up" onclick="toast('选择文件上传')"><div style="font-size:24px;margin-right:8px">📎</div><div>上传PPT<br><span style="font-size:10px;color:var(--t3)">PDF、PPTX</span></div></div></div>
+<div class="fm"><div class="fm-l">项目简介</div><textarea class="fm-ta" placeholder="简要描述项目功能、技术栈、创新点…"></textarea></div>
+<button class="bt bp bf" style="padding:14px" onclick="toast('✅ 项目提交成功！')">提交项目</button>
+</div>
+</div>
+</div>
+
+<!-- ===== 子页面: 作业提交（增强版） ===== -->
+<div class="P" id="p-assignment1">
+<div class="ph on"><div class="ph-b" onclick="back('grow')">←</div><div class="ph-t">作业提交</div><div style="width:34px"></div></div>
+<div style="padding:56px 16px 24px">
+<div class="C"><div style="font-size:16px;font-weight:700;margin-bottom:6px">Python循环与函数作业</div><div style="font-size:12px;color:var(--rd)">⚠ 截止 2026-05-15</div><div style="font-size:12px;color:var(--t2);margin-top:8px">完成10道Python编程题</div></div>
+<div class="C">
+<div class="fm"><div class="fm-l">代码提交</div>
+<div class="code-editor">
+<div class="code-toolbar"><span>main.py</span><span style="color:var(--cy)">Python</span><span style="margin-left:auto;cursor:pointer" onclick="document.getElementById('codeArea').value='';toast('已清空')">清空</span></div>
+<textarea id="codeArea" placeholder="# 在此编写代码
+def fibonacci(n):
+    \"\"\"返回斐波那契数列前n项\"\"\"
+    # Your code here
+    pass
+
+# 测试
+if __name__ == '__main__':
+    print(fibonacci(10))"></textarea>
+</div></div>
+<div class="fm"><div class="fm-l">附件上传</div><div class="fm-up" onclick="toast('选择文件')"><div style="font-size:24px;margin-right:8px">📎</div><div>上传代码截图或文档<br><span style="font-size:10px;color:var(--t3)">PDF、PNG、JPG · 最大10MB</span></div></div></div>
+<div style="padding:8px 0"><button class="bt bp bf" style="padding:14px" onclick="toast('✅ 作业提交成功！')">提交作业</button></div>
+</div></div>
+</div>
+
+<!-- ===== 子页面: 作业批改结果 ===== -->
+<div class="P" id="p-gradeResult">
+<div class="ph on"><div class="ph-b" onclick="back('grow')">←</div><div class="ph-t">批改结果</div><div style="width:34px"></div></div>
+<div style="padding:56px 16px 24px">
+<div class="C" style="text-align:center">
+<div style="font-size:16px;font-weight:700;margin-bottom:16px">数据采集脚本设计</div>
+<div class="grade-circle" style="background:var(--cyd);color:var(--cy)">92</div>
+<div style="font-size:14px;font-weight:700;color:var(--cy);margin-bottom:4px">优秀</div>
+<div style="font-size:11px;color:var(--t3)">满分100 · 班级平均分78</div>
+</div>
+<div class="C"><div class="sh">📝 批改意见</div>
+<div style="font-size:12px;color:var(--t2);line-height:1.8">
+<span style="color:var(--cy)">✅</span> 代码结构清晰，函数命名规范<br>
+<span style="color:var(--cy)">✅</span> 异常处理完善，考虑了网络超时等情况<br>
+<span style="color:var(--cy)">✅</span> 数据清洗逻辑正确<br>
+<span style="color:var(--go)">⚠️</span> 建议增加日志记录功能<br>
+<span style="color:var(--go)">⚠️</span> 部分正则表达式可优化<br>
+<span style="color:var(--cy)">✅</span> 文档注释完整
+</div></div>
+<div class="C"><div class="sh">📋 参考答案</div>
+<div class="code-editor">
+<div class="code-toolbar"><span>solution.py</span><span style="color:var(--cy)">参考答案</span></div>
+<textarea readonly style="color:var(--t2);min-height:120px">import requests
+from bs4 import BeautifulSoup
+import pandas as pd
+import re
+from datetime import datetime
+
+def scrape_data(url, headers=None):
+    """爬取指定URL的产品数据"""
+    try:
+        response = requests.get(url, headers=headers, timeout=10)
+        response.raise_for_status()
+        soup = BeautifulSoup(response.text, 'html.parser')
+        # ... 数据提取逻辑
+        return data
+    except Exception as e:
+        print(f"Error: {e}")
+        return None</textarea>
+</div></div>
+</div>
+</div>
+
+<!-- ===== 子页面: 任务详情 ===== -->
+<div class="P" id="p-taskDetail1">
+<div class="ph on"><div class="ph-b" onclick="back('task')">←</div><div class="ph-t">任务详情</div><div style="width:34px"></div></div>
+<div style="padding:56px 16px 24px">
+<div class="C">
+<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px"><div style="font-size:16px;font-weight:700;flex:1;margin-right:12px">AI客服助手配置</div><span class="sb db">报名中</span></div>
+<div class="rf"><div class="rf-n a">待审核</div><div class="rf-n a">已通过</div><div class="rf-n a">报名中</div><div class="rf-n">执行中</div><div class="rf-n">已完成</div></div>
+</div>
+<div class="C"><div class="sh">需求信息</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+<div><div style="font-size:11px;color:var(--t3)">到手金额</div><div style="font-size:14px;font-weight:700;color:var(--go)">¥6,800</div></div>
+<div><div style="font-size:11px;color:var(--t3)">截止时间</div><div style="font-size:14px;font-weight:600">2026-06-15</div></div>
+<div><div style="font-size:11px;color:var(--t3)">所需等级</div><div><span class="lv l2">L2起接</span></div></div>
+<div><div style="font-size:11px;color:var(--t3)">剩余名额</div><div style="font-size:14px;font-weight:600;color:var(--cy)">3名</div></div>
+</div></div>
+<div style="padding:16px 0"><button class="bt bp bf" style="padding:14px" onclick="showMo('confirmOrder')">确认接单</button></div>
+</div>
+</div>
+
+<!-- ===== 子页面: 里程碑提交 ===== -->
+<div class="P" id="p-milestone1">
+<div class="ph on"><div class="ph-b" onclick="back('task')">←</div><div class="ph-t">提交里程碑</div><div style="width:34px"></div></div>
+<div style="padding:56px 16px 24px">
+<div class="C"><div style="font-size:12px;color:var(--bl);margin-bottom:8px">当前节点 · 第3节点</div><div style="font-size:16px;font-weight:700;margin-bottom:8px">功能开发</div></div>
+<div class="C">
+<div class="fm"><div class="fm-l">GitHub 仓库链接</div><input class="fm-i" placeholder="https://github.com/..."></div>
+<div class="fm"><div class="fm-l">提交说明</div><textarea class="fm-ta" placeholder="本次提交包含…"></textarea></div>
+<div class="fm"><div class="fm-l">附件上传</div><div class="fm-up" onclick="toast('选择文件上传')"><div style="font-size:24px;margin-right:8px">📎</div><div>点击上传</div></div></div>
+</div>
+<div style="padding:16px 0"><button class="bt bp bf" style="padding:14px" onclick="toast('✅ 里程碑提交成功！')">提交里程碑</button></div>
+</div>
+</div>
+
+<!-- ===== 子页面: 任务执行 ===== -->
+<div class="P" id="p-taskExec1">
+<div class="ph on"><div class="ph-b" onclick="back('task')">←</div><div class="ph-t">任务执行</div><div style="width:34px"></div></div>
+<div style="padding:56px 16px 24px">
+<div class="C"><div style="display:flex;justify-content:space-between;margin-bottom:8px"><div style="font-size:16px;font-weight:700">AI客服助手配置</div><span class="sb rd">⚠ 重点关注</span></div>
+<div style="font-size:12px;color:var(--t2)">到手 ¥6,800 · 云智科技</div>
+<div style="margin-top:10px"><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--t2);margin-bottom:4px"><span>整体进度</span><span style="color:var(--rd)">50%</span></div><div class="pb"><div style="width:50%;background:var(--rd)"></div></div></div></div>
+<div class="C"><div class="sh">里程碑</div>
+<div class="tl">
+<div class="tl-i done"><div class="tl-n">① 需求确认</div><div class="tl-d">05-10 · 已通过</div></div>
+<div class="tl-i act"><div class="tl-n">③ 功能开发</div><div class="tl-d">当前节点</div>
+<div style="margin-top:8px;display:flex;gap:8px"><button class="bt bp" style="padding:6px 14px;font-size:11px" onclick="G('milestone1')">提交里程碑</button></div>
+</div>
+</div></div>
+</div>
+</div>
+
+<!-- ===== 子页面: 设置 ===== -->
+<div class="P" id="p-settings">
+<div class="ph on"><div class="ph-b" onclick="back('mine')">←</div><div class="ph-t">设置</div><div style="width:34px"></div></div>
+<div style="padding:56px 16px 24px">
+<div class="C" style="padding:0">
+<div class="mi" onclick="G('editProfile')"><div style="display:flex;align-items:center;gap:10px"><span style="font-size:18px">👤</span><span>个人信息</span></div><span style="color:var(--t4)">›</span></div>
+<div class="mi"><div style="display:flex;align-items:center;gap:10px"><span style="font-size:18px">🔒</span><span>账号安全</span></div><span style="color:var(--t4)">›</span></div>
+<div class="mi"><div style="display:flex;align-items:center;gap:10px"><span style="font-size:18px">🔔</span><span>任务通知</span></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+<div class="mi"><div style="display:flex;align-items:center;gap:10px"><span style="font-size:18px">💬</span><span>BBS通知</span></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+</div>
+<div style="margin-top:20px"><button class="bt bf" style="padding:14px;border:1.5px solid var(--rd);color:var(--rd);background:none" onclick="toast('已退出登录')">退出登录</button></div>
+</div>
+</div>
+
+<!-- ===== 子页面: 个人信息编辑 ===== -->
+<div class="P" id="p-editProfile">
+<div class="ph on"><div class="ph-b" onclick="back('settings')">←</div><div class="ph-t">编辑个人信息</div><div style="width:34px"></div></div>
+<div style="padding:56px 16px 24px">
+<div style="text-align:center;margin-bottom:20px">
+<div id="editAvatar" style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#4ECDC4,#556270);display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:800;color:#fff;margin:0 auto;cursor:pointer;position:relative" onclick="toast('选择头像图片')">张
+<div style="position:absolute;bottom:-2px;right:-2px;width:26px;height:26px;border-radius:50%;background:var(--bl);display:flex;align-items:center;justify-content:center;font-size:12px;border:2px solid var(--bg)">📷</div>
+</div>
+<div style="font-size:11px;color:var(--t3);margin-top:6px">点击更换头像</div>
+</div>
+<div class="fm"><div class="fm-l">姓名</div><input class="fm-i" value="张云飞"></div>
+<div class="fm"><div class="fm-l">学校</div><input class="fm-i" value="清华大学"></div>
+<div class="fm"><div class="fm-l">专业</div><input class="fm-i" value="计算机科学与技术"></div>
+<div class="fm"><div class="fm-l">个人简介</div><textarea class="fm-ta" style="font-family:var(--f)">清华大学计算机系，NLP与大模型优化方向。专注企业级LLM落地和Agent系统开发。</textarea></div>
+<div class="fm">
+<div class="fm-l">技能标签</div>
+<div id="skillTags">
+<span class="skill-tag">Python <span class="del" onclick="this.parentElement.remove()">×</span></span>
+<span class="skill-tag">NLP <span class="del" onclick="this.parentElement.remove()">×</span></span>
+<span class="skill-tag">GPT <span class="del" onclick="this.parentElement.remove()">×</span></span>
+<span class="skill-tag">数据分析 <span class="del" onclick="this.parentElement.remove()">×</span></span>
+<span class="skill-add" onclick="addSkill()">+ 添加</span>
+</div>
+</div>
+<div class="fm"><div class="fm-l">GitHub链接</div><input class="fm-i" value="https://github.com/yunfei-zhang"></div>
+<div style="padding:20px 0"><button class="bt bp bf" style="padding:14px" onclick="toast('✅ 个人信息已保存！')">保存</button></div>
+</div>
+</div>
+
+<!-- ===== 子页面: 收益明细 ===== -->
+<div class="P" id="p-earnings">
+<div class="ph on"><div class="ph-b" onclick="back('mine')">←</div><div class="ph-t">收益明细</div><div style="width:34px"></div></div>
+<div style="padding:56px 16px 24px">
+<div class="C" style="text-align:center;padding:24px 16px">
+<div style="font-size:11px;color:var(--t2);margin-bottom:6px">账户余额</div>
+<div style="font-size:36px;font-weight:800;color:var(--cy)">¥24,600</div>
+</div>
+<div class="C"><div style="display:flex;justify-content:space-around;text-align:center">
+<div><div style="font-size:18px;font-weight:700;color:var(--go)">¥3,200</div><div style="font-size:11px;color:var(--t3)">待结算</div></div>
+<div><div style="font-size:18px;font-weight:700;color:var(--cy)">¥18,000</div><div style="font-size:11px;color:var(--t3)">已提现</div></div>
+</div></div>
+</div>
+</div>
+
+<!-- ===== 子页面: 消息通知 ===== -->
+<div class="P" id="p-notifications">
+<div class="ph on"><div class="ph-b" onclick="back('mine')">←</div><div class="ph-t">消息通知</div><div style="width:34px"></div></div>
+<div style="padding:56px 16px 24px">
+<div class="noti"><div class="noti-ico" style="background:var(--bld)">📋</div><div class="noti-body"><div class="noti-title">里程碑提交提醒</div><div class="noti-desc">AI客服助手配置 · 功能开发节点明天截止</div><div class="noti-time">2小时前 · 未读</div></div></div>
+<div class="noti"><div class="noti-ico" style="background:var(--cyd)">✅</div><div class="noti-body"><div class="noti-title">任务验收通过</div><div class="noti-desc">AIGC爆款文案生成系统 · 三级验收全部通过</div><div class="noti-time">1天前 · 未读</div></div></div>
+<div class="noti"><div class="noti-ico" style="background:var(--god)">💰</div><div class="noti-body"><div class="noti-title">收益到账</div><div class="noti-desc">+¥10,200已结算到账</div><div class="noti-time">1天前</div></div></div>
+</div>
+</div>
+
+<!-- ===== 子页面: 岗位详情 ===== -->
+<div class="P" id="p-job1">
+<div class="ph on"><div class="ph-b" onclick="back('grow')">←</div><div class="ph-t">岗位详情</div><div style="width:34px"></div></div>
+<div style="padding:56px 16px 24px">
+<div class="C">
+<div style="display:flex;justify-content:space-between;margin-bottom:10px"><span class="tg" style="background:var(--rd);color:#fff">CAIO需求</span><span style="font-size:15px;font-weight:800;color:var(--cy)">¥50k+/月</span></div>
+<div style="font-size:18px;font-weight:800;margin-bottom:4px">CAIO 首席AI官</div>
+<div style="font-size:12px;color:var(--t2)">某独角兽企业 · 北京/上海</div>
+</div>
+<div style="padding:16px 0"><button class="bt bp bf" style="padding:14px" onclick="toast('✅ 已投递！')">投递简历</button></div>
+</div>
+</div>
+
+</div><!-- end #M -->
+
+<!-- ===== Modals ===== -->
+<div class="mo" id="mo-confirmOrder"><div class="mo-c">
+<div class="mo-t">确认接单</div>
+<div style="padding:12px;background:var(--rdd);border-radius:8px;font-size:11px;color:var(--rd);line-height:1.8;margin-bottom:12px">
+⚠ 接单后不可取消<br>⚠ 需按里程碑节点按时提交
+</div>
+<div style="display:flex;gap:10px;margin-top:12px"><button class="bt bo" style="flex:1;padding:12px" onclick="hideMo('confirmOrder')">取消</button><button class="bt bp" style="flex:1;padding:12px" onclick="hideMo('confirmOrder');toast('✅ 接单成功！')">确认接单</button></div>
+</div></div>
+
+<!-- ===== Tab Bar ===== -->
+<div class="T" id="tabBar">
+<div class="a" onclick="switchTab(this,0)"><span style="font-size:22px">🏠</span><span>发现</span></div>
+<div onclick="switchTab(this,1)"><span style="font-size:22px">📚</span><span>成长</span></div>
+<div onclick="switchTab(this,2)"><span style="font-size:22px">📋</span><span>任务</span></div>
+<div onclick="switchTab(this,3)"><span style="font-size:22px">👤</span><span>我的</span></div>
+</div>
+
+</div><!-- end .app -->
+
+<script>
+// ===== Tab切换 =====
+const tabPages=['p-disc','p-grow','p-task','p-mine'];
+let curTab=0;
+function switchTab(el,n){
+  curTab=n;
+  document.querySelectorAll('.T>div').forEach(d=>d.classList.remove('a'));
+  if(el)el.classList.add('a');else document.querySelectorAll('.T>div')[n].classList.add('a');
+  tabPages.forEach((id,i)=>{document.getElementById(id).classList.toggle('on',i===n)});
+  hideAllSubs();
+  document.getElementById('M').style.padding='0 16px 24px';
+  document.getElementById('M').style.height='calc(100dvh - 64px)';
+  document.getElementById('M').scrollTop=0;
+}
+
+// ===== 子页面导航 =====
+const subPages={
+  group1:'p-group1',group3:'p-group1',group2:'p-group1',group4:'p-group1',group5:'p-group1',group6:'p-group1',
+  post1:'p-post1',post2:'p-post1',post3:'p-post1',
+  taskDetail1:'p-taskDetail1',milestone1:'p-milestone1',taskExec1:'p-taskExec1',
+  course1:'p-course1',video1:'p-video1',
+  earnings:'p-earnings',notifications:'p-notifications',settings:'p-settings',
+  profile1:'p-profile1',profile2:'p-profile1',profile3:'p-profile1',
+  chat1:'p-chat1',hackathon1:'p-hackathon1',job1:'p-job1',
+  assignment1:'p-assignment1',gradeResult:'p-gradeResult',
+  editProfile:'p-editProfile'
+};
+const backMap={
+  group1:'disc',group3:'disc',group2:'disc',group4:'disc',group5:'disc',group6:'disc',
+  post1:'group1',post2:'group1',post3:'group1',
+  taskDetail1:'task',milestone1:'task',taskExec1:'task',
+  course1:'grow',video1:'course1',
+  earnings:'mine',notifications:'mine',settings:'mine',
+  profile1:'disc',profile2:'disc',profile3:'disc',
+  chat1:'profile1',hackathon1:'grow',job1:'grow',
+  assignment1:'grow',gradeResult:'grow',
+  editProfile:'settings'
+};
+
+// Pages with reply bar - hide tabBar
+const chatPages=['p-post1','p-chat1'];
+const backTargets=['group1','group3','group2','group4','group5','group6','disc','grow','task','mine','course1','profile1','settings'];
+
+function G(id){
+  const pageId=subPages[id];if(!pageId)return;
+  tabPages.forEach(tid=>{document.getElementById(tid).classList.remove('on')});
+  hideAllSubs();
+  const el=document.getElementById(pageId);
+  if(el){el.classList.add('on');}
+  document.getElementById('M').scrollTop=0;
+  const ph=el?el.querySelector('.ph'):null;
+  if(ph)ph.classList.add('on');
+  // Hide tabBar for chat pages
+  if(chatPages.includes(pageId)){
+    document.getElementById('tabBar').style.display='none';
+  }
+  // Adjust height for pages with reply bar
+  if(pageId==='p-post1'||pageId==='p-chat1'){
+    document.getElementById('M').style.height='calc(100dvh - 56px)';
+  }
+}
+
+function back(from){
+  hideAllSubs();
+  document.getElementById('tabBar').style.display='flex';
+  document.getElementById('M').style.height='calc(100dvh - 64px)';
+  // If going back to a sub-page
+  if(backTargets.includes(from)){
+    if(['disc','grow','task','mine'].includes(from)){
+      const tabPage=document.getElementById(tabPages[curTab]);
+      if(tabPage)tabPage.classList.add('on');
+    } else {
+      // Navigate to another sub-page
+      G(from);
+    }
+  } else {
+    const tabPage=document.getElementById(tabPages[curTab]);
+    if(tabPage)tabPage.classList.add('on');
+  }
+  document.getElementById('M').scrollTop=0;
+}
+
+function hideAllSubs(){
+  Object.values(subPages).forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.classList.remove('on');
+  });
+  document.querySelectorAll('.ph').forEach(p=>p.classList.remove('on'));
+}
+
+// ===== Like Toggle =====
+function toggleLike(el,count){
+  const liked=el.classList.toggle('liked');
+  if(liked){
+    el.textContent='❤️ '+(count+1);
+  } else {
+    el.textContent='🤍 '+count;
+  }
+  el.dataset.count=count;
+}
+
+// ===== Join Group =====
+const joinedGroups={};
+function joinGroup(card,gid,emoji,name,people){
+  if(joinedGroups[gid]){
+    toast('你已加入'+name+'小组');
+    return;
+  }
+  joinedGroups[gid]=true;
+  card.style.borderColor='var(--bdh)';
+  const status=card.querySelector('.join-status');
+  status.textContent=people+' · 已加入';
+  status.style.color='var(--t3)';
+  toast('✅ 已加入'+name+'小组！');
+}
+
+// ===== Send Reply =====
+function sendReply(){
+  const input=document.getElementById('replyInput');
+  const text=input.value.trim();
+  if(!text)return;
+  const list=document.getElementById('replyList');
+  const div=document.createElement('div');
+  div.style.cssText='background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:14px;margin-bottom:10px';
+  div.innerHTML='<div class="bs-h"><div class="bs-av" style="background:linear-gradient(135deg,#4ECDC4,#556270);width:28px;height:28px;font-size:10px">张</div><div><div class="bs-n" style="font-size:12px">张云飞 <span class="lv l3">L3</span></div><div class="bs-t">刚刚</div></div></div><div style="font-size:12px;color:var(--t);line-height:1.6">'+escHtml(text)+'</div>';
+  list.appendChild(div);
+  input.value='';
+  const count=document.getElementById('replyCount');
+  count.textContent=parseInt(count.textContent)+1;
+  document.getElementById('M').scrollTop=document.getElementById('M').scrollHeight;
+}
+
+// ===== Send Chat =====
+function sendChat(){
+  const input=document.getElementById('chatInput');
+  const text=input.value.trim();
+  if(!text)return;
+  const list=document.getElementById('chatList');
+  const div=document.createElement('div');
+  div.className='chat-row me';
+  div.innerHTML='<div class="chat-bubble">'+escHtml(text)+'</div>';
+  list.appendChild(div);
+  input.value='';
+  document.getElementById('M').scrollTop=document.getElementById('M').scrollHeight;
+  // Simulate reply
+  setTimeout(()=>{
+    const replies=['好的，我看看！','👍 有道理','我晚点回复你详细的方案','这个思路不错！'];
+    const r=document.createElement('div');
+    r.className='chat-row';
+    r.innerHTML='<div class="av" style="width:32px;height:32px;font-size:11px;background:linear-gradient(135deg,#F5A623,#FF6B6B);color:#fff;flex-shrink:0">云</div><div class="chat-bubble">'+replies[Math.floor(Math.random()*replies.length)]+'</div>';
+    list.appendChild(r);
+    document.getElementById('M').scrollTop=document.getElementById('M').scrollHeight;
+  },1000);
+}
+
+// ===== Send Live Chat =====
+function sendLiveChat(){
+  const input=document.getElementById('liveChatInput');
+  const text=input.value.trim();
+  if(!text)return;
+  const chat=document.getElementById('liveChat');
+  const div=document.createElement('div');
+  div.className='live-msg';
+  div.innerHTML='<span class="live-msg-n" style="color:var(--cy)">我：</span><span class="live-msg-t">'+escHtml(text)+'</span>';
+  chat.appendChild(div);
+  input.value='';
+  chat.scrollTop=chat.scrollHeight;
+}
+
+// ===== Video Toggle =====
+function toggleVideo(){
+  const btn=document.getElementById('vidPlayBtn');
+  btn.classList.toggle('playing');
+  if(btn.classList.contains('playing')){
+    toast('▶ 开始播放');
+  } else {
+    toast('⏸ 已暂停');
+  }
+}
+
+// ===== Task Filtering =====
+function filterTasks(el){
+  const parent=el.parentElement;
+  parent.querySelectorAll(':scope>div').forEach(d=>d.classList.remove('a'));
+  el.classList.add('a');
+  const cat=el.dataset.cat;
+  const cards=document.querySelectorAll('#taskCards .tc');
+  cards.forEach(c=>{
+    if(cat==='全部'||c.dataset.category===cat){
+      c.style.display='block';
+    } else {
+      c.style.display='none';
+    }
+  });
+}
+
+// ===== Connect Button =====
+function handleConnect(btn){
+  if(btn.dataset.connected){
+    btn.innerHTML='🤝 建立连接';
+    btn.className='bt bp';
+    btn.style.fontSize='11px';
+    btn.style.padding='8px 16px';
+    delete btn.dataset.connected;
+    toast('已取消连接');
+  } else {
+    btn.innerHTML='✅ 已连接';
+    btn.className='bt bo';
+    btn.style.fontSize='11px';
+    btn.style.padding='8px 16px';
+    btn.dataset.connected='1';
+    toast('🤝 连接请求已发送！');
+  }
+}
+
+// ===== Skill Add =====
+function addSkill(){
+  const name=prompt('输入技能名称：');
+  if(!name)return;
+  const container=document.getElementById('skillTags');
+  const addBtn=container.querySelector('.skill-add');
+  const span=document.createElement('span');
+  span.className='skill-tag';
+  span.innerHTML=escHtml(name)+' <span class="del" onclick="this.parentElement.remove()">×</span>';
+  container.insertBefore(span,addBtn);
+}
+
+// ===== Sub Tab Switchers =====
+function switchTaskTab(el,n){
+  document.querySelectorAll('#taskMainTab>div').forEach(d=>d.classList.remove('a'));
+  el.classList.add('a');
+  document.getElementById('taskHall').style.display=n===0?'block':'none';
+  document.getElementById('myTaskArea').style.display=n===1?'block':'none';
+}
+
+function switchBBSTab(el,n){document.querySelectorAll('#bbsTab .a').forEach((t,i)=>t.classList.toggle('a',i===n));for(let i=0;i<4;i++){const d=document.getElementById('bbs'+i);if(d)d.style.display=i===n?'block':'none'}}
+function switchHackTab(el,n){
+  document.querySelectorAll('#hackTab>div').forEach(d=>d.classList.remove('a'));
+  el.classList.add('a');
+  for(let i=0;i<3;i++)document.getElementById('hk'+i).style.display=i===n?'block':'none';
+}
+
+function SG(t){
+  document.querySelectorAll('#gTabs>div').forEach(d=>d.classList.remove('a'));
+  var m={c:0,h:1,j:2};
+  var tabs=document.querySelectorAll('#gTabs>div');
+  if(tabs[m[t]])tabs[m[t]].classList.add('a');
+  document.getElementById('gc').style.display=t==='c'?'block':'none';
+  document.getElementById('gh').style.display=t==='h'?'block':'none';
+  document.getElementById('gj').style.display=t==='j'?'block':'none';
+  var b={c:{tag:'精品课程',ti:'零基础 AIGC 实战课程',st:'从 Prompt 到本地化部署全流程'},h:{tag:'热力比赛',ti:'蓝血春季黑客松 V2.0',st:'超级个体项目商业化'},j:{tag:'岗位对接',ti:'CAIO 首席AI官岗位内推',st:'俱乐部直推 · 高薪优选'}};
+  var d=b[t];
+  document.getElementById('bTag').textContent=d.tag;
+  document.getElementById('bTi').textContent=d.ti;
+  document.getElementById('bSt').textContent=d.st;
+}
+
+// ===== Modal =====
+function showMo(id){document.getElementById('mo-'+id).classList.add('on')}
+function hideMo(id){document.getElementById('mo-'+id).classList.remove('on')}
+
+// ===== Toast =====
+let toastTimer;
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('on');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('on'),2000);
+}
+
+// ===== Utility =====
+function escHtml(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+
+// Click overlay to close modal
+document.querySelectorAll('.mo').forEach(m=>{
+  m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('on')});
+});
+</script>
+</body>
+</html>

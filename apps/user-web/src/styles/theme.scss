@@ -1,0 +1,31 @@
+// 蓝血菁英平台 - Vant 主题定制
+
+// 覆盖 Vant 默认变量以匹配浅色主题
+:root {
+  // Vant 基础色
+  --van-blue: #4A90E2;
+  --van-green: #52C9A4;
+  --van-orange: #F5A623;
+  --van-red: #E57474;
+  --van-gray: #909BAD;
+
+  // 背景色
+  --van-background: #F7F8FC;
+  --van-background-2: #FFFFFF;
+
+  // 文字色
+  --van-text-primary: #2C3345;
+  --van-text-secondary: #5A6478;
+  --van-text-tertiary: #909BAD;
+  --van-text-placeholder: #B8BFCC;
+
+  // 边框
+  --van-border-color: #E8EBF0;
+  --van-border-radius: 10px;
+  --van-radius-md: 10px;
+
+  // 阴影
+  --van-shadow-1: 0 1px 4px rgba(44, 51, 69, 0.06);
+  --van-shadow-2: 0 4px 12px rgba(44, 51, 69, 0.08);
+  --van-shadow-3: 0 8px 24px rgba(44, 51, 69, 0.10);
+}
