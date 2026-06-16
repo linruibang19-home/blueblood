@@ -41,3 +41,18 @@ Thumbs.db
 # ===== 自动生成文件（unplugin auto-import / components，dev/build 时自动重建，无需入库）=====
 apps/user-web/auto-imports.d.ts
 apps/user-web/components.d.ts
+
+# ===== Java / Maven 构建产物 =====
+target/
+**/target/
+*.class
+*.jar
+*.war
+hs_err_pid*
+
+# ===== Java IDE =====
+*.iml
+
+# ===== 上传文件目录 =====
+uploads/
+server/**/uploads/

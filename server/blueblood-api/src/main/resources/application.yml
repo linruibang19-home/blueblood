@@ -1,0 +1,92 @@
+server:
+  port: ${SERVER_PORT:8080}
+  servlet:
+    context-path: /api
+  tomcat:
+    uri-encoding: UTF-8
+
+spring:
+  application:
+    name: blueblood-api
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+    default-property-inclusion: non_null
+  # MySQL（通过环境变量覆盖，便于本地/Docker统一）
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:blueblood_v2}?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: ${MYSQL_USERNAME:root}
+    password: ${MYSQL_PASSWORD:}
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout: 30000
+      # 启动时不强连，避免 DB 未就绪导致启动失败
+      initialization-fail-timeout: -1
+  # Redis
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      database: ${REDIS_DB:0}
+      timeout: 5000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 4
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+# MyBatis-Plus
+mybatis-plus:
+  mapper-locations: classpath*:mapper/**/*.xml
+  type-aliases-package: com.blueblood.api.modules.**.entity
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    banner: false
+    db-config:
+      id-type: AUTO
+      # 软删：表设计用 deleted_at(DATETIME)，MP 全局逻辑删对时间戳字段有 NULL 比较坑，
+      # 故不启用全局逻辑删除；软删在各 mapper/service 中以 `deleted_at IS NULL` 手动过滤。
+
+# JWT 认证配置
+jwt:
+  # 开发用默认密钥，生产务必通过 JWT_SECRET 环境变量覆盖
+  secret: ${JWT_SECRET:ZGV2LWJsdWVibG9vZC1qd3Qtc2VjcmV0LWtleS1wbGVhc2UtY2hhbmdlLWluLXByb2R1Y3Rpb24tMjAyNg==}
+  # 有效期（秒），默认 7 天
+  expire-seconds: ${JWT_EXPIRE_SECONDS:604800}
+  issuer: blueblood
+  header: Authorization
+  token-prefix: "Bearer "
+
+# Knife4j / OpenAPI3
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
+
+# 文件上传
+upload:
+  base-path: ${UPLOAD_BASE_PATH:./uploads}
+  public-url: ${UPLOAD_PUBLIC_URL:http://localhost:8080/api/uploads}
+
+logging:
+  level:
+    root: INFO
+    com.blueblood.api: DEBUG
+    org.springframework.security: INFO
