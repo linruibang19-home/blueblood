@@ -58,7 +58,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { onLoad } from '@dcloudio/uni-app'
+import { onLoad, onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app'
 import { getTaskDetail, acceptTask, type Task } from '@/api/task'
 import { useUserStore } from '@/store/user'
 
@@ -101,6 +101,24 @@ async function onAccept() {
 onLoad((q: any) => {
   taskId.value = String(q?.id || '')
   load()
+})
+
+/** 转发给好友 */
+onShareAppMessage(() => {
+  const t = task.value
+  return {
+    title: t ? `${t.title} · ¥${t.reward}` : '蓝血菁英 · 成长任务',
+    path: `/pages/task/detail?id=${taskId.value}`,
+  }
+})
+
+/** 分享到朋友圈 */
+onShareTimeline(() => {
+  const t = task.value
+  return {
+    title: t ? `${t.title} · ¥${t.reward}` : '蓝血菁英 · 成长任务',
+    query: `id=${taskId.value}`,
+  }
 })
 </script>
 

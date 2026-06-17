@@ -38,7 +38,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { onLoad } from '@dcloudio/uni-app'
+import { onLoad, onShareAppMessage } from '@dcloudio/uni-app'
 import { getTaskOrderDetail, type TaskOrder } from '@/api/task'
 
 const order = ref<TaskOrder | null>(null)
@@ -79,6 +79,14 @@ function goSubmit(mid: string) {
 onLoad((q: any) => {
   orderId.value = String(q?.id || q?.orderId || '')
   load()
+})
+
+onShareAppMessage(() => {
+  const o = order.value
+  return {
+    title: o ? `任务进度：${o.taskTitle}` : '蓝血菁英 · 任务进度',
+    path: `/pages/task/order-detail?id=${orderId.value}`,
+  }
 })
 </script>
 

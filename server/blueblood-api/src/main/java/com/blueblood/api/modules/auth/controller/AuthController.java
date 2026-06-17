@@ -4,6 +4,7 @@ import com.blueblood.api.common.result.Result;
 import com.blueblood.api.modules.auth.dto.LoginRequest;
 import com.blueblood.api.modules.auth.dto.LoginResponse;
 import com.blueblood.api.modules.auth.dto.RegisterRequest;
+import com.blueblood.api.modules.auth.dto.WxLoginRequest;
 import com.blueblood.api.modules.auth.service.AuthService;
 import com.blueblood.api.security.JwtProperties;
 import com.blueblood.api.security.LoginUser;
@@ -41,6 +42,12 @@ public class AuthController {
     public Result<Map<String, Object>> register(@Valid @RequestBody RegisterRequest request) {
         Long userId = authService.register(request);
         return Result.success(Map.of("userId", userId));
+    }
+
+    @Operation(summary = "微信小程序登录(wx.login code → token，未配置 AppID 时走演示桩)")
+    @PostMapping("/wx-login")
+    public Result<LoginResponse> wxLogin(@Valid @RequestBody WxLoginRequest request) {
+        return Result.success(authService.wxLogin(request));
     }
 
     @Operation(summary = "登出（无状态：丢弃令牌；后续接 Redis 黑名单）")

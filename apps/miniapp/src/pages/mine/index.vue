@@ -6,7 +6,8 @@
         <image class="logo" src="/static/logo.png" mode="aspectFit" />
         <view class="login-title">蓝血菁英</view>
         <view class="login-sub">登录后开启你的成长之旅</view>
-        <button class="btn primary" :loading="logining" @tap="onLogin">测试登录 lin / 123456</button>
+        <button class="btn primary" :loading="logining" @tap="onWxLogin">微信一键登录</button>
+        <button class="btn outline" :loading="logining" @tap="onLogin">测试登录 lin / 123456</button>
         <view class="api-tip" v-if="apiText">{{ apiText }}</view>
       </view>
     </view>
@@ -15,7 +16,7 @@
     <view v-else>
       <!-- 用户信息卡 -->
       <view class="profile-card">
-        <image class="avatar" :src="user?.avatar || defaultAvatar" mode="aspectFill" />
+        <image class="avatar" :src="user?.avatar || defaultAvatar" mode="aspectFill" @tap="onChangeAvatar" />
         <view class="info">
           <view class="name-row">
             <text class="name">{{ user?.name || '蓝血用户' }}</text>
@@ -71,9 +72,10 @@
 import { ref, computed } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import { useUserStore } from '@/store/user'
-import { getCurrentUser, type User } from '@/api/user'
+import { getCurrentUser, updateProfile, type User } from '@/api/user'
 import { getWalletSummary, type WalletSummary } from '@/api/wallet'
 import { getUnreadCount } from '@/api/notification'
+import { uploadFile } from '@/utils/upload'
 
 const userStore = useUserStore()
 const defaultAvatar = 'https://cdn.uviewui.com/uview/album/1.jpg'
@@ -102,17 +104,56 @@ async function loadAll() {
   }
 }
 
+/** 微信一键登录：uni.login 拿 code → wxLogin → 存 token → 刷新 */
+async function onWxLogin() {
+  logining.value = true
+  try {
+    const loginRes: any = await uni.login({ provider: 'weixin' })
+    const code = loginRes?.code
+    if (!code) throw new Error('未获取到微信 code')
+    await userStore.wxLogin(code)
+    await userStore.fetchMe()
+    await loadAll()
+    uni.showToast({ title: '登录成功', icon: 'success' })
+  } catch (e: any) {
+    apiText.value = `微信登录失败：${e.message || e}`
+    uni.showToast({ title: '微信登录失败，可使用测试登录', icon: 'none' })
+  } finally {
+    logining.value = false
+  }
+}
+
+/** 兜底测试登录 */
 async function onLogin() {
   logining.value = true
   try {
     await userStore.login('lin', '123456')
     await userStore.fetchMe()
     await loadAll()
+    uni.showToast({ title: '登录成功', icon: 'success' })
   } catch (e: any) {
     apiText.value = `登录失败：${e.message || e}`
     uni.showToast({ title: '登录失败', icon: 'none' })
   } finally {
     logining.value = false
+  }
+}
+
+/** 点击头像 → 选图 → 上传 → 更新资料 */
+async function onChangeAvatar() {
+  try {
+    const choose: any = await uni.chooseImage({ count: 1, sizeType: ['compressed', 'original'] })
+    const temp = (choose?.tempFilePaths?.[0] || choose?.tempFiles?.[0]?.path) as string | undefined
+    if (!temp) return
+    uni.showLoading({ title: '上传中...' })
+    const up = await uploadFile({ filePath: temp, bizType: 'avatar' })
+    await updateProfile({ avatar: up.url })
+    if (user.value) user.value.avatar = up.url
+    uni.hideLoading()
+    uni.showToast({ title: '头像已更新', icon: 'success' })
+  } catch (e: any) {
+    uni.hideLoading()
+    uni.showToast({ title: e.message || '更新头像失败', icon: 'none' })
   }
 }
 
@@ -183,6 +224,14 @@ onShow(() => {
 .btn.primary {
   background: #4a90e2;
   color: #fff;
+}
+.btn + .btn {
+  margin-top: 20rpx;
+}
+.btn.outline {
+  background: #fff;
+  color: #4a90e2;
+  border: 1rpx solid #4a90e2;
 }
 .btn.logout {
   margin-top: 40rpx;

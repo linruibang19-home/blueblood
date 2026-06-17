@@ -44,7 +44,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { onShow } from '@dcloudio/uni-app'
+import { onShow, onShareAppMessage } from '@dcloudio/uni-app'
 import { getWalletSummary, getWalletRecords, type WalletSummary, type WalletRecord } from '@/api/wallet'
 
 const wallet = ref<WalletSummary>({ balance: 0, pendingAmount: 0, withdrawnAmount: 0, totalEarned: 0 })
@@ -60,6 +60,13 @@ async function load() {
 }
 
 onShow(load)
+
+onShareAppMessage(() => {
+  return {
+    title: '蓝血菁英 · 我的收益',
+    path: '/pages/mine/wallet',
+  }
+})
 </script>
 
 <style lang="scss" scoped>

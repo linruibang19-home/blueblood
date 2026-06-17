@@ -1,6 +1,13 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { login as apiLogin, logout as apiLogout, me as apiMe, type LoginUser } from '@/api/auth'
+import {
+  login as apiLogin,
+  logout as apiLogout,
+  me as apiMe,
+  wxLogin as apiWxLogin,
+  type LoginUser,
+  type WxLoginResult,
+} from '@/api/auth'
 import { TOKEN_KEY } from '@/config'
 
 export const useUserStore = defineStore('user', () => {
@@ -9,6 +16,14 @@ export const useUserStore = defineStore('user', () => {
 
   async function login(username: string, password: string) {
     const res = await apiLogin({ username, password })
+    token.value = res.token
+    uni.setStorageSync(TOKEN_KEY, res.token)
+    return res
+  }
+
+  /** 微信登录：code 由 uni.login 获取，可选传入昵称/头像 */
+  async function wxLogin(code: string, nickname?: string, avatar?: string): Promise<WxLoginResult> {
+    const res = await apiWxLogin(code, nickname, avatar)
     token.value = res.token
     uni.setStorageSync(TOKEN_KEY, res.token)
     return res
@@ -40,5 +55,5 @@ export const useUserStore = defineStore('user', () => {
     uni.removeStorageSync(TOKEN_KEY)
   }
 
-  return { token, userInfo, login, fetchMe, logout }
+  return { token, userInfo, login, wxLogin, fetchMe, logout }
 })

@@ -37,3 +37,22 @@ export function me(): Promise<LoginUser> {
 export function logout(): Promise<void> {
   return http.post<void>('/auth/logout')
 }
+
+export interface WxLoginResult {
+  token: string
+  userId?: number
+  username?: string
+  role?: string
+  nickname?: string
+  avatar?: string
+  [k: string]: any
+}
+
+/**
+ * POST /auth/wx-login
+ * body: { code, nickname?, avatar? }
+ * 未配置 AppID 时后端返回演示 token，可正常使用。
+ */
+export function wxLogin(code: string, nickname?: string, avatar?: string): Promise<WxLoginResult> {
+  return http.post<WxLoginResult>('/auth/wx-login', { code, nickname, avatar })
+}

@@ -62,3 +62,17 @@ export async function getEliteUsers(): Promise<User[]> {
     return []
   }
 }
+
+export interface UpdateProfilePayload {
+  avatar?: string
+  nickname?: string
+  name?: string
+  bio?: string
+  github?: string
+  [k: string]: any
+}
+
+/** PUT /user/profile 更新当前用户资料（部分字段） */
+export function updateProfile(payload: UpdateProfilePayload): Promise<any> {
+  return http.put<any>('/user/profile', payload)
+}
