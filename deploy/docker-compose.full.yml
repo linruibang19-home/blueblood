@@ -71,6 +71,13 @@ services:
     ports:
       - "3000:80"
 
+  admin-web:
+    build:
+      context: ../apps/admin-web
+    container_name: blueblood-v2-admin-web
+    ports:
+      - "3001:80"
+
 volumes:
   mysql_data:
   api_uploads:
