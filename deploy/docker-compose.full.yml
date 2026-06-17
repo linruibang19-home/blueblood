@@ -10,7 +10,7 @@
 services:
   mysql:
     image: mysql:8.0
-    container_name: blueblood-mysql
+    container_name: blueblood-v2-mysql
     environment:
       MYSQL_ROOT_PASSWORD: blueblood
       MYSQL_DATABASE: blueblood_v2
@@ -30,7 +30,7 @@ services:
 
   redis:
     image: redis:7-alpine
-    container_name: blueblood-redis
+    container_name: blueblood-v2-redis
     ports:
       - "6380:6379"   # 映射到宿主 6380，避免与本机原生 Redis(6379) 冲突
     healthcheck:
@@ -42,7 +42,7 @@ services:
   api:
     build:
       context: ../server/blueblood-api
-    container_name: blueblood-api
+    container_name: blueblood-v2-api
     depends_on:
       mysql:
         condition: service_healthy
@@ -67,7 +67,7 @@ services:
   user-web:
     build:
       context: ../apps/user-web
-    container_name: blueblood-user-web
+    container_name: blueblood-v2-user-web
     ports:
       - "3000:80"
 
