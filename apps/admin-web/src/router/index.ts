@@ -47,6 +47,19 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/community/PostManage.vue'),
         meta: { title: '帖子管理' },
       },
+      // 教育管理 - 课程管理 / 作业管理（专用视图）
+      {
+        path: 'edu/course',
+        name: 'EduCourse',
+        component: () => import('@/views/edu/CourseManage.vue'),
+        meta: { title: '课程管理' },
+      },
+      {
+        path: 'edu/assignment',
+        name: 'EduAssignment',
+        component: () => import('@/views/edu/AssignmentManage.vue'),
+        meta: { title: '作业管理' },
+      },
       // 其余业务菜单 -> 通用占位页 PlaceholderView（按 title 区分）
       ...menuItems
         .filter(
@@ -55,7 +68,9 @@ const routes: RouteRecordRaw[] = [
             item.path !== '/system/user' &&
             item.path !== '/system/verification' &&
             item.path !== '/community/group' &&
-            item.path !== '/community/post'
+            item.path !== '/community/post' &&
+            item.path !== '/edu/course' &&
+            item.path !== '/edu/assignment'
         )
         .map((item) => {
           // 路由 name 用 path 生成唯一标识
