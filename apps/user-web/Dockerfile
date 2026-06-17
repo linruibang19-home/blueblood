@@ -6,8 +6,9 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 
-# 拷源码并构建
+# 拷源码并构建(注入 VITE_USE_API=true，使生产构建走真实后端 API)
 COPY . .
+ENV VITE_USE_API=true
 RUN npm run build
 
 # ---- 运行阶段 ----
