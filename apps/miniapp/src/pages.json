@@ -15,13 +15,50 @@
 		{
 			"path": "pages/task/index",
 			"style": {
-				"navigationBarTitleText": "任务"
+				"navigationBarTitleText": "任务",
+				"enablePullDownRefresh": true
 			}
 		},
 		{
 			"path": "pages/mine/index",
 			"style": {
 				"navigationBarTitleText": "我的"
+			}
+		},
+		{
+			"path": "pages/task/detail",
+			"style": {
+				"navigationBarTitleText": "任务详情"
+			}
+		},
+		{
+			"path": "pages/task/orders",
+			"style": {
+				"navigationBarTitleText": "我的任务"
+			}
+		},
+		{
+			"path": "pages/task/order-detail",
+			"style": {
+				"navigationBarTitleText": "任务执行"
+			}
+		},
+		{
+			"path": "pages/task/milestone-submit",
+			"style": {
+				"navigationBarTitleText": "提交成果"
+			}
+		},
+		{
+			"path": "pages/mine/wallet",
+			"style": {
+				"navigationBarTitleText": "我的收益"
+			}
+		},
+		{
+			"path": "pages/mine/notifications",
+			"style": {
+				"navigationBarTitleText": "消息通知"
 			}
 		}
 	],
