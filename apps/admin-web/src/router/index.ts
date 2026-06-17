@@ -34,6 +34,19 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/system/VerificationReview.vue'),
         meta: { title: '认证审核' },
       },
+      // 系统管理 - 系统配置(配置/字典/任务分类/技能标签) / 操作日志（专用视图）
+      {
+        path: 'system/config',
+        name: 'SystemConfig',
+        component: () => import('@/views/system/ConfigManage.vue'),
+        meta: { title: '系统配置' },
+      },
+      {
+        path: 'system/log',
+        name: 'SystemLog',
+        component: () => import('@/views/system/LogManage.vue'),
+        meta: { title: '操作日志' },
+      },
       // 社区管理 - 小组管理 / 帖子管理（专用视图）
       {
         path: 'community/group',
@@ -93,6 +106,8 @@ const routes: RouteRecordRaw[] = [
             item.path !== '/dashboard' &&
             item.path !== '/system/user' &&
             item.path !== '/system/verification' &&
+            item.path !== '/system/config' &&
+            item.path !== '/system/log' &&
             item.path !== '/community/group' &&
             item.path !== '/community/post' &&
             item.path !== '/edu/course' &&
