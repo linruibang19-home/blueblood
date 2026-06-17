@@ -4,7 +4,6 @@
     :fixed="false"
     :border="true"
     :safe-area-inset-bottom="true"
-    route
     @change="handleChange"
   >
     <van-tabbar-item to="/discover">

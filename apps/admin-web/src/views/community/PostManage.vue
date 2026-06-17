@@ -287,7 +287,7 @@ async function confirmToggle(row: AdminPostVO) {
   }
   try {
     await updatePostStatus(row.id, next)
-    row.status = next
+    await loadList()
     ElMessage.success(`已${verb}`)
   } catch (e) {
     ElMessage.error((e as Error).message || '操作失败')

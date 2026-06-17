@@ -81,7 +81,7 @@ async function onAccept() {
   }
   // 已接单：直接跳我的任务
   if (task.value?.myOrderId) {
-    uni.navigateTo({ url: '/pages/task/orders/index' })
+    uni.navigateTo({ url: '/pages/task/orders' })
     return
   }
   accepting.value = true
@@ -89,7 +89,7 @@ async function onAccept() {
     await acceptTask(taskId.value)
     uni.showToast({ title: '接单成功', icon: 'success' })
     setTimeout(() => {
-      uni.redirectTo({ url: '/pages/task/orders/index' })
+      uni.redirectTo({ url: '/pages/task/orders' })
     }, 600)
   } catch (e: any) {
     uni.showToast({ title: e.message || '接单失败', icon: 'none' })

@@ -117,11 +117,16 @@ public class AdminWalletService {
             account.setWithdrawnAmount(cur.add(withdraw.getAmount() == null ? BigDecimal.ZERO : withdraw.getAmount()));
             walletAccountMapper.updateById(account);
         } else {
-            // 驳回：置 failed，记录失败原因
+            // 驳回：置 failed，记录失败原因，并把申请时冻结的金额退回余额
             withdraw.setStatus("failed");
             withdraw.setFailureReason(req.getFailureReason());
             withdraw.setProcessedAt(LocalDateTime.now());
             withdrawRecordMapper.updateById(withdraw);
+
+            WalletAccount account = findAccountByUser(withdraw.getUserId());
+            BigDecimal bal = account.getBalance() == null ? BigDecimal.ZERO : account.getBalance();
+            account.setBalance(bal.add(withdraw.getAmount() == null ? BigDecimal.ZERO : withdraw.getAmount()));
+            walletAccountMapper.updateById(account);
         }
     }
 

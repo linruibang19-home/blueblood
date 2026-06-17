@@ -24,7 +24,9 @@ function mapUser(raw: any): User {
     points: Number(raw?.points ?? 0),
     creditScore: Number(raw?.creditScore ?? 0),
     completedTasks: Number(raw?.completedTasks ?? 0),
-    skills: Array.isArray(raw?.skills) ? raw.skills : [],
+    skills: Array.isArray(raw?.skills)
+      ? raw.skills.map((s: any) => (s && typeof s === 'object' ? s.name : s)).filter((s: any) => s)
+      : [],
     verified: !!raw?.verified,
     bio: raw?.bio || '',
     github: raw?.github || '',

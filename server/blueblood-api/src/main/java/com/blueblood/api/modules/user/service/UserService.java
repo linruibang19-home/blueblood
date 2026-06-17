@@ -139,7 +139,9 @@ public class UserService {
     public UserVO buildVO(Long userId) {
         User user = getById(userId);
         UserProfile profile = userProfileMapper.selectOne(new LambdaQueryWrapper<UserProfile>()
-                .eq(UserProfile::getUserId, userId));
+                .eq(UserProfile::getUserId, userId)
+                .isNull(UserProfile::getDeletedAt)
+                .last("LIMIT 1"));
         List<UserSkill> skills = userSkillMapper.selectList(new LambdaQueryWrapper<UserSkill>()
                 .eq(UserSkill::getUserId, userId)
                 .isNull(UserSkill::getDeletedAt));
@@ -198,7 +200,9 @@ public class UserService {
         }
 
         UserProfile profile = userProfileMapper.selectOne(new LambdaQueryWrapper<UserProfile>()
-                .eq(UserProfile::getUserId, userId));
+                .eq(UserProfile::getUserId, userId)
+                .isNull(UserProfile::getDeletedAt)
+                .last("LIMIT 1"));
         boolean createProfile;
         if (profile == null) {
             profile = new UserProfile();
@@ -268,7 +272,8 @@ public class UserService {
         // 已通过或待审核则不允许重复提交
         Long pending = userVerificationMapper.selectCount(new LambdaQueryWrapper<UserVerification>()
                 .eq(UserVerification::getUserId, userId)
-                .in(UserVerification::getStatus, "PENDING", "APPROVED"));
+                .in(UserVerification::getStatus, "PENDING", "APPROVED")
+                .isNull(UserVerification::getDeletedAt));
         if (pending != null && pending > 0) {
             throw new BusinessException(ResultCode.OPERATION_FAILED, "已有待审核或已通过的认证申请");
         }
@@ -291,6 +296,7 @@ public class UserService {
     public UserVerification myLatestVerification(Long userId) {
         return userVerificationMapper.selectOne(new LambdaQueryWrapper<UserVerification>()
                 .eq(UserVerification::getUserId, userId)
+                .isNull(UserVerification::getDeletedAt)
                 .orderByDesc(UserVerification::getCreatedAt)
                 .last("LIMIT 1"));
     }

@@ -365,7 +365,7 @@ async function confirmToggle(row: AdminGroupVO) {
   }
   try {
     await updateGroupStatus(row.id, next)
-    row.status = next
+    await loadList()
     ElMessage.success('状态已更新')
   } catch (e) {
     ElMessage.error((e as Error).message || '更新失败')

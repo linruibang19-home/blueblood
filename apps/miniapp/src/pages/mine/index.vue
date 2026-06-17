@@ -44,13 +44,13 @@
 
       <!-- 功能入口 -->
       <view class="menu-card">
-        <view class="menu-item" @tap="go('/pages/mine/wallet/index')">
+        <view class="menu-item" @tap="go('/pages/mine/wallet')">
           <text class="menu-ic">💰</text>
           <text class="menu-tx">我的收益</text>
           <text class="menu-extra">¥{{ wallet.balance.toFixed(2) }}</text>
           <text class="arrow">›</text>
         </view>
-        <view class="menu-item" @tap="go('/pages/mine/notifications/index')">
+        <view class="menu-item" @tap="go('/pages/mine/notifications')">
           <text class="menu-ic">🔔</text>
           <text class="menu-tx">消息通知</text>
           <text class="badge" v-if="unread > 0">{{ unread > 99 ? '99+' : unread }}</text>

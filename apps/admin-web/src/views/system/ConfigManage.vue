@@ -12,7 +12,7 @@
                   placeholder="配置键/名称/备注"
                   clearable
                   style="width: 220px"
-                  @keyup.enter="loadConfig"
+                  @keyup.enter="onConfigSearch"
                 />
               </el-form-item>
               <el-form-item>
@@ -81,7 +81,7 @@
                   placeholder="键/值/名称"
                   clearable
                   style="width: 200px"
-                  @keyup.enter="loadDict"
+                  @keyup.enter="onDictSearch"
                 />
               </el-form-item>
               <el-form-item>
@@ -169,7 +169,7 @@
                 placeholder="技能名/分类"
                 clearable
                 style="width: 220px"
-                @keyup.enter="loadSkill"
+                @keyup.enter="onSkillSearch"
               />
             </el-form-item>
             <el-form-item>

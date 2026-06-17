@@ -27,13 +27,22 @@ request.interceptors.request.use(
 // 响应拦截器：统一解包 { code, message, data }，code=0/200 视为成功并直接返回 data
 request.interceptors.response.use(
   (response: AxiosResponse) => {
-    const { code, data, message } = response.data
-    if (code === 0 || code === 200) {
-      return data
+    const body = response.data
+    // 兼容非标准 envelope（裸数组/裸数据）：无 code 字段时原样返回
+    if (body && typeof body === 'object' && 'code' in body) {
+      const { code, data, message } = body
+      if (code === 0 || code === 200) {
+        return data
+      }
+      return Promise.reject(new Error(message || '请求失败'))
     }
-    return Promise.reject(new Error(message || '请求失败'))
+    return body
   },
   (error) => {
+    // 401：token 过期/无效，清除本地 token 触发重新登录，避免死循环
+    if (error.response?.status === 401) {
+      localStorage.removeItem('token')
+    }
     const message = error.response?.data?.message || error.message || '网络错误'
     return Promise.reject(new Error(message))
   }

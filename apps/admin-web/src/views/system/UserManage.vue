@@ -314,6 +314,10 @@ function openAdjust(row: AdminUserVO) {
 }
 
 async function submitAdjust() {
+  if (!adjustForm.reason || !adjustForm.reason.trim()) {
+    ElMessage.warning("请填写调整原因")
+    return
+  }
   submitting.value = true
   try {
     await adjustUser(adjustForm.id, {

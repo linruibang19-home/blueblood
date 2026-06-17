@@ -108,7 +108,7 @@ function goOrders() {
     uni.showToast({ title: '请先登录', icon: 'none' })
     return
   }
-  uni.navigateTo({ url: '/pages/task/orders/index' })
+  uni.navigateTo({ url: '/pages/task/orders' })
 }
 
 onShow(() => {
