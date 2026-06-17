@@ -21,9 +21,27 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/dashboard/DashboardView.vue'),
         meta: { title: '工作台' },
       },
+      // 系统管理 - 用户管理 / 认证审核（专用视图）
+      {
+        path: 'system/user',
+        name: 'SystemUser',
+        component: () => import('@/views/system/UserManage.vue'),
+        meta: { title: '用户管理' },
+      },
+      {
+        path: 'system/verification',
+        name: 'SystemVerification',
+        component: () => import('@/views/system/VerificationReview.vue'),
+        meta: { title: '认证审核' },
+      },
       // 其余业务菜单 -> 通用占位页 PlaceholderView（按 title 区分）
       ...menuItems
-        .filter((item) => item.path !== '/dashboard')
+        .filter(
+          (item) =>
+            item.path !== '/dashboard' &&
+            item.path !== '/system/user' &&
+            item.path !== '/system/verification'
+        )
         .map((item) => {
           // 路由 name 用 path 生成唯一标识
           const name = item.path
