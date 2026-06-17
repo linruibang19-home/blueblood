@@ -34,13 +34,28 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/system/VerificationReview.vue'),
         meta: { title: '认证审核' },
       },
+      // 社区管理 - 小组管理 / 帖子管理（专用视图）
+      {
+        path: 'community/group',
+        name: 'CommunityGroup',
+        component: () => import('@/views/community/GroupManage.vue'),
+        meta: { title: '小组管理' },
+      },
+      {
+        path: 'community/post',
+        name: 'CommunityPost',
+        component: () => import('@/views/community/PostManage.vue'),
+        meta: { title: '帖子管理' },
+      },
       // 其余业务菜单 -> 通用占位页 PlaceholderView（按 title 区分）
       ...menuItems
         .filter(
           (item) =>
             item.path !== '/dashboard' &&
             item.path !== '/system/user' &&
-            item.path !== '/system/verification'
+            item.path !== '/system/verification' &&
+            item.path !== '/community/group' &&
+            item.path !== '/community/post'
         )
         .map((item) => {
           // 路由 name 用 path 生成唯一标识
