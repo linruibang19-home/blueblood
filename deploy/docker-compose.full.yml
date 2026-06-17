@@ -1,0 +1,76 @@
+# 蓝血菁英平台 · 阶段二完整本地编排（mysql + redis + api + user-web）
+# 用法（在项目根目录）：
+#   docker compose -f deploy/docker-compose.full.yml up --build
+# 启动后：
+#   前端 H5  http://localhost:3000
+#   后端 API http://localhost:8090/api  (Knife4j 文档 /api/doc.html)
+#   MySQL    localhost:3307 (root/blueblood)  · Redis localhost:6380
+# 首次启动 mysql 会自动导入 sql/init.sql + v2_001（演示用户 lin/admin 密码 123456）
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: blueblood-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: blueblood
+      MYSQL_DATABASE: blueblood_v2
+      TZ: Asia/Shanghai
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    ports:
+      - "3307:3306"   # 映射到宿主 3307，避免与本机原生 MySQL(3306) 冲突
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ../sql/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+      - ../sql/v2_001_auth_user.sql:/docker-entrypoint-initdb.d/02-v2_001.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-pblueblood"]
+      interval: 6s
+      timeout: 5s
+      retries: 30
+
+  redis:
+    image: redis:7-alpine
+    container_name: blueblood-redis
+    ports:
+      - "6380:6379"   # 映射到宿主 6380，避免与本机原生 Redis(6379) 冲突
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 6s
+      timeout: 3s
+      retries: 20
+
+  api:
+    build:
+      context: ../server/blueblood-api
+    container_name: blueblood-api
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      SERVER_PORT: 8080
+      MYSQL_HOST: mysql
+      MYSQL_PORT: 3306
+      MYSQL_DATABASE: blueblood_v2
+      MYSQL_USERNAME: root
+      MYSQL_PASSWORD: blueblood
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      JWT_SECRET: dev-blueblood-jwt-secret-key-please-change-in-production-2026
+      SPRING_PROFILES_ACTIVE: dev
+    ports:
+      - "8090:8080"   # 宿主 8090 → 容器 8080
+    volumes:
+      - api_uploads:/app/uploads
+
+  user-web:
+    build:
+      context: ../apps/user-web
+    container_name: blueblood-user-web
+    ports:
+      - "3000:80"
+
+volumes:
+  mysql_data:
+  api_uploads:
