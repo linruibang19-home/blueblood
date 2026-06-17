@@ -1,0 +1,47 @@
+/**
+ * 蓝血菁英平台 - 小程序主题变量（浅色高级感，对齐 apps/user-web 浅色调）
+ * 在 scss 中可直接使用如下变量，无需 import
+ */
+
+/* 主题色 */
+$uni-color-primary: #4A90E2;
+$uni-color-primary-light: #7AB3F0;
+$uni-color-primary-dark: #357ABD;
+$uni-color-success: #52C9A4;
+$uni-color-warning: #F5A623;
+$uni-color-error: #E57474;
+
+/* 文字基本颜色（高级灰） */
+$uni-text-color: #2C3345;
+$uni-text-color-inverse: #fff;
+$uni-text-color-grey: #5A6478;
+$uni-text-color-placeholder: #B8BFCC;
+$uni-text-color-disable: #c0c0c0;
+
+/* 背景颜色 */
+$uni-bg-color: #ffffff;
+$uni-bg-color-grey: #F7F8FC;
+$uni-bg-color-hover: #F0F2F7;
+$uni-bg-color-mask: rgba(0, 0, 0, 0.4);
+
+/* 边框颜色 */
+$uni-border-color: #E8EBF0;
+
+/* 文字尺寸 */
+$uni-font-size-sm: 12px;
+$uni-font-size-base: 14px;
+$uni-font-size-lg: 16px;
+
+/* Border Radius */
+$uni-border-radius-sm: 6px;
+$uni-border-radius-base: 10px;
+$uni-border-radius-lg: 16px;
+$uni-border-radius-circle: 50%;
+
+/* 间距 */
+$uni-spacing-sm: 8px;
+$uni-spacing-base: 12px;
+$uni-spacing-lg: 16px;
+
+/* 透明度 */
+$uni-opacity-disabled: 0.3;
