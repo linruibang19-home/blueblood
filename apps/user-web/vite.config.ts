@@ -23,5 +23,14 @@ export default defineConfig({
   server: {
     port: 3000,
     host: true,
+    proxy: {
+      // 前端所有请求均以 /api 开头（与 axios baseURL 一致）。
+      // 后端 context-path 已为 /api，因此无需 rewrite 去前缀：
+      // 前端 /api/auth/login -> http://localhost:8090/api/auth/login
+      '/api': {
+        target: 'http://localhost:8090',
+        changeOrigin: true,
+      },
+    },
   },
 })

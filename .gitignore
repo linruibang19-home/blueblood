@@ -20,6 +20,9 @@ pnpm-debug.log*
 .env
 .env.*
 !.env.example
+# 前端 dev 联调开关文件(仅含 VITE_USE_API 布尔，无密钥)，允许入库以保证可复现
+!.env.development
+!.env.api
 
 # ===== 编辑器 / IDE =====
 .vscode/*
