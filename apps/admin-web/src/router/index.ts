@@ -60,6 +60,19 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/edu/AssignmentManage.vue'),
         meta: { title: '作业管理' },
       },
+      // 任务管理 - 任务管理 / 里程碑审核（专用视图）
+      {
+        path: 'task/task',
+        name: 'TaskTask',
+        component: () => import('@/views/task/TaskManage.vue'),
+        meta: { title: '任务管理' },
+      },
+      {
+        path: 'task/milestone',
+        name: 'TaskMilestone',
+        component: () => import('@/views/task/MilestoneReview.vue'),
+        meta: { title: '里程碑审核' },
+      },
       // 其余业务菜单 -> 通用占位页 PlaceholderView（按 title 区分）
       ...menuItems
         .filter(
@@ -70,7 +83,9 @@ const routes: RouteRecordRaw[] = [
             item.path !== '/community/group' &&
             item.path !== '/community/post' &&
             item.path !== '/edu/course' &&
-            item.path !== '/edu/assignment'
+            item.path !== '/edu/assignment' &&
+            item.path !== '/task/task' &&
+            item.path !== '/task/milestone'
         )
         .map((item) => {
           // 路由 name 用 path 生成唯一标识
