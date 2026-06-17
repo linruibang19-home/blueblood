@@ -73,6 +73,19 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/task/MilestoneReview.vue'),
         meta: { title: '里程碑审核' },
       },
+      // 财务管理 - 收益结算 / 提现管理（专用视图）
+      {
+        path: 'finance/income',
+        name: 'FinanceIncome',
+        component: () => import('@/views/finance/IncomeManage.vue'),
+        meta: { title: '收益结算' },
+      },
+      {
+        path: 'finance/withdraw',
+        name: 'FinanceWithdraw',
+        component: () => import('@/views/finance/WithdrawManage.vue'),
+        meta: { title: '提现管理' },
+      },
       // 其余业务菜单 -> 通用占位页 PlaceholderView（按 title 区分）
       ...menuItems
         .filter(
@@ -85,7 +98,9 @@ const routes: RouteRecordRaw[] = [
             item.path !== '/edu/course' &&
             item.path !== '/edu/assignment' &&
             item.path !== '/task/task' &&
-            item.path !== '/task/milestone'
+            item.path !== '/task/milestone' &&
+            item.path !== '/finance/income' &&
+            item.path !== '/finance/withdraw'
         )
         .map((item) => {
           // 路由 name 用 path 生成唯一标识
