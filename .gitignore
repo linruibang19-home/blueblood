@@ -20,6 +20,9 @@ pnpm-debug.log*
 .env
 .env.*
 !.env.example
+# 前端 dev 联调开关文件(仅含 VITE_USE_API 布尔，无密钥)，允许入库以保证可复现
+!.env.development
+!.env.api
 
 # ===== 编辑器 / IDE =====
 .vscode/*
@@ -41,3 +44,18 @@ Thumbs.db
 # ===== 自动生成文件（unplugin auto-import / components，dev/build 时自动重建，无需入库）=====
 apps/user-web/auto-imports.d.ts
 apps/user-web/components.d.ts
+
+# ===== Java / Maven 构建产物 =====
+target/
+**/target/
+*.class
+*.jar
+*.war
+hs_err_pid*
+
+# ===== Java IDE =====
+*.iml
+
+# ===== 上传文件目录 =====
+uploads/
+server/**/uploads/
