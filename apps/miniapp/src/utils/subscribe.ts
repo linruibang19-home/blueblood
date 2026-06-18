@@ -15,7 +15,7 @@ export interface SubscribeResult {
  */
 export function requestSubscribe(tmplIds: string[]): Promise<SubscribeResult> {
   return new Promise<SubscribeResult>((resolve, reject) => {
-    uni.requestSubscriptionMessage({
+    uni.requestSubscribeMessage({
       tmplIds,
       success: (res: any) => {
         // res 形如 { 'tmplId': 'accept', errMsg: '...' }
