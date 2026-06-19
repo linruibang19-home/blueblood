@@ -6,6 +6,12 @@ const routes: RouteRecordRaw[] = [
     redirect: '/discover',
   },
   {
+    path: '/login',
+    name: 'Login',
+    component: () => import('@/pages/auth/LoginPage.vue'),
+    meta: { tab: '' },
+  },
+  {
     path: '/discover',
     name: 'Discover',
     component: () => import('@/pages/discover/DiscoverPage.vue'),

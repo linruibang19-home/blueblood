@@ -5,16 +5,17 @@
         <!-- 头部信息 -->
         <div class="profile-header">
           <div class="user-info">
-            <div class="avatar-wrap" @click="goEditProfile">
+            <div class="avatar-wrap" @click="user ? goEditProfile() : goLogin()">
               <UserAvatar :src="user?.avatar || ''" :size="'xl'" :verified="user?.verified" />
               <span class="avatar-edit-icon">
-                <van-icon name="photograph" />
+                <van-icon :name="user ? 'photograph' : 'lock'" />
               </span>
             </div>
             <div class="user-details">
               <div class="name-row">
                 <h2 class="user-name">{{ user?.name || '未登录' }}</h2>
-                <LevelBadge :level="user?.level || 1" :level-name="user?.levelName || '新锐'" />
+                <LevelBadge v-if="user" :level="user?.level || 1" :level-name="user?.levelName || '新锐'" />
+                <van-button v-if="!user" size="small" type="primary" round @click="goLogin">登录 / 注册</van-button>
               </div>
               <p class="user-school">{{ user?.school || '' }} · {{ user?.major || '' }}</p>
               <div class="user-skills">
@@ -142,6 +143,10 @@ function goNotifications() {
 
 function goEditProfile() {
   router.push('/mine/profile/edit')
+}
+
+function goLogin() {
+  router.push('/login?redirect=/mine')
 }
 
 function goSettings() {
