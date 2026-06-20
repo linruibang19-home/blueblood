@@ -21,4 +21,7 @@ public class AdminUserQuery extends PageQuery {
 
     @Schema(description = "认证状态: 0-未认证 1-已认证")
     private Integer verified;
+
+    @Schema(description = "用户类型: personal/enterprise")
+    private String userType;
 }

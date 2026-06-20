@@ -3,6 +3,9 @@ import request from './request'
 /** 用户状态 */
 export type UserStatus = 'ACTIVE' | 'INACTIVE' | 'BANNED'
 
+/** 用户类型：personal=个人 enterprise=企业 */
+export type UserType = 'personal' | 'enterprise'
+
 /** 用户列表查询参数 */
 export interface UserListParams {
   page: number
@@ -11,6 +14,8 @@ export interface UserListParams {
   status?: UserStatus
   /** 0=未认证 1=已认证，不传=全部 */
   verified?: number
+  /** 用户类型筛选，不传=全部 */
+  userType?: UserType
 }
 
 /** AdminUserVO */
@@ -29,6 +34,8 @@ export interface AdminUserVO {
   completedTasks: number
   /** 0/1 */
   verified: number
+  /** 用户类型：personal=个人 enterprise=企业 */
+  userType?: UserType
   status: UserStatus
   lastLoginAt?: string
   createdAt?: string

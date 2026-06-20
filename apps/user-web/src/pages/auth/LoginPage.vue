@@ -34,6 +34,10 @@
       </van-form>
 
       <p class="hint">演示账号：lin / zhangming / lina / wangqiang（密码 123456）</p>
+
+      <p class="enterprise-link">
+        <router-link to="/enterprise-register">企业注册 →</router-link>
+      </p>
     </div>
   </div>
 </template>
@@ -112,5 +116,16 @@ async function handleLogin() {
   color: var(--text-tertiary);
   margin-top: 20px;
   padding: 0 var(--spacing-xl);
+}
+
+.enterprise-link {
+  text-align: center;
+  margin-top: 12px;
+}
+
+.enterprise-link a {
+  font-size: var(--font-size-sm);
+  color: var(--primary);
+  text-decoration: none;
 }
 </style>

@@ -86,6 +86,22 @@
             <van-cell title="编辑个人资料" is-link @click="goEditProfile">
               <template #icon><van-icon name="user-o" class="menu-icon" /></template>
             </van-cell>
+            <van-cell
+              v-if="isEnterpriseUser"
+              title="企业工作台"
+              is-link
+              @click="goEnterpriseConsole"
+            >
+              <template #icon><van-icon name="shop-o" class="menu-icon" /></template>
+            </van-cell>
+            <van-cell
+              v-else-if="user"
+              title="企业认证"
+              is-link
+              @click="goEnterpriseRegister"
+            >
+              <template #icon><van-icon name="certificate" class="menu-icon" /></template>
+            </van-cell>
             <van-cell title="设置" is-link @click="goSettings">
               <template #icon><van-icon name="setting-o" class="menu-icon" /></template>
             </van-cell>
@@ -113,6 +129,8 @@ const router = useRouter()
 const user = ref<User | null>(null)
 const wallet = ref<WalletSummary | null>(null)
 const unreadCount = ref(0)
+
+const isEnterpriseUser = computed(() => user.value?.userType === 'enterprise')
 
 const nextLevelPoints = computed(() => {
   return ((user.value?.level || 1) + 1) * 1000 - (user.value?.points || 0) % 1000
@@ -147,6 +165,14 @@ function goEditProfile() {
 
 function goLogin() {
   router.push('/login?redirect=/mine')
+}
+
+function goEnterpriseConsole() {
+  router.push('/mine/enterprise')
+}
+
+function goEnterpriseRegister() {
+  router.push('/enterprise-register')
 }
 
 function goSettings() {

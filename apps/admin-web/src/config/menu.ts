@@ -30,6 +30,7 @@ export const menuItems: MenuItem[] = [
   { path: '/system/notification', title: '通知管理', icon: 'Bell', group: '系统管理' },
   { path: '/system/config', title: '系统配置', icon: 'Setting', group: '系统管理' },
   { path: '/system/permission', title: '权限管理', icon: 'Lock', group: '系统管理' },
+  { path: '/system/enterprise', title: '企业认证', icon: 'OfficeBuilding', group: '系统管理' },
   { path: '/system/log', title: '操作日志', icon: 'Document', group: '系统管理' },
 
   // 社区管理

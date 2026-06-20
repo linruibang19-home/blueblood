@@ -16,6 +16,8 @@ export interface User {
   bio: string
   github: string
   joinedAt: string
+  /** 用户类型：enterprise 企业用户 / personal 个人用户 */
+  userType?: string
 }
 
 export interface UserProfile extends User {

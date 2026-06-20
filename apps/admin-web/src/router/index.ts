@@ -59,6 +59,12 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/system/PermissionManage.vue'),
         meta: { title: '权限管理' },
       },
+      {
+        path: 'system/enterprise',
+        name: 'SystemEnterprise',
+        component: () => import('@/views/system/EnterpriseReview.vue'),
+        meta: { title: '企业认证' },
+      },
       // 社区管理 - 小组管理 / 帖子管理（专用视图）
       {
         path: 'community/group',
@@ -71,6 +77,19 @@ const routes: RouteRecordRaw[] = [
         name: 'CommunityPost',
         component: () => import('@/views/community/PostManage.vue'),
         meta: { title: '帖子管理' },
+      },
+      // 活动管理 - 黑客松管理 / 岗位管理（专用视图）
+      {
+        path: 'activity/hackathon',
+        name: 'ActivityHackathon',
+        component: () => import('@/views/activity/HackathonManage.vue'),
+        meta: { title: '黑客松管理' },
+      },
+      {
+        path: 'activity/job',
+        name: 'ActivityJob',
+        component: () => import('@/views/activity/JobManage.vue'),
+        meta: { title: '岗位管理' },
       },
       // 教育管理 - 课程管理 / 作业管理（专用视图）
       {
@@ -121,9 +140,12 @@ const routes: RouteRecordRaw[] = [
             item.path !== '/system/notification' &&
             item.path !== '/system/config' &&
             item.path !== '/system/permission' &&
+            item.path !== '/system/enterprise' &&
             item.path !== '/system/log' &&
             item.path !== '/community/group' &&
             item.path !== '/community/post' &&
+            item.path !== '/activity/job' &&
+            item.path !== '/activity/hackathon' &&
             item.path !== '/edu/course' &&
             item.path !== '/edu/assignment' &&
             item.path !== '/task/task' &&

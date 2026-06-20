@@ -32,6 +32,8 @@ function mapUser(raw: any): User {
     github: raw?.github || '',
     // 后端无 joinedAt，用 lastLoginAt 兜底，再缺失给空串
     joinedAt: raw?.joinedAt || raw?.lastLoginAt || '',
+    // 用户类型：企业用户/个人用户
+    userType: raw?.userType || 'personal',
   }
 }
 

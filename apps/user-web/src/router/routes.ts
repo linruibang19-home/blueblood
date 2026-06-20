@@ -12,6 +12,12 @@ const routes: RouteRecordRaw[] = [
     meta: { tab: '' },
   },
   {
+    path: '/enterprise-register',
+    name: 'EnterpriseRegister',
+    component: () => import('@/pages/auth/EnterpriseRegisterPage.vue'),
+    meta: { tab: '' },
+  },
+  {
     path: '/discover',
     name: 'Discover',
     component: () => import('@/pages/discover/DiscoverPage.vue'),
@@ -135,6 +141,12 @@ const routes: RouteRecordRaw[] = [
     path: '/mine/profile/edit',
     name: 'EditProfile',
     component: () => import('@/pages/mine/EditProfile.vue'),
+    meta: { tab: '' },
+  },
+  {
+    path: '/mine/enterprise',
+    name: 'EnterpriseConsole',
+    component: () => import('@/pages/mine/EnterpriseConsole.vue'),
     meta: { tab: '' },
   },
 ]

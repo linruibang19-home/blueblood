@@ -50,6 +50,9 @@ public class User extends BaseEntity {
     /** 账号状态: ACTIVE/INACTIVE/BANNED */
     private String status;
 
+    /** 用户类型: personal/enterprise */
+    private String userType;
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime lastLoginAt;
 }

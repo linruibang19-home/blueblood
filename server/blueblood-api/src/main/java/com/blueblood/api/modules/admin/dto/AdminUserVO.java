@@ -29,6 +29,9 @@ public class AdminUserVO {
     private Integer verified;
     private String status;
 
+    @Schema(description = "用户类型: personal/enterprise")
+    private String userType;
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime lastLoginAt;
 

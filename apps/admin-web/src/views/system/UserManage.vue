@@ -36,6 +36,18 @@
             <el-option label="已认证" :value="1" />
           </el-select>
         </el-form-item>
+        <el-form-item label="用户类型">
+          <el-select
+            v-model="filter.userType"
+            placeholder="全部"
+            clearable
+            style="width: 140px"
+          >
+            <el-option label="全部" :value="undefined" />
+            <el-option label="个人" value="personal" />
+            <el-option label="企业" value="enterprise" />
+          </el-select>
+        </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSearch">查询</el-button>
           <el-button @click="handleReset">重置</el-button>
@@ -77,6 +89,16 @@
               已认证
             </el-tag>
             <el-tag v-else type="info" size="small">未认证</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="用户类型" width="100">
+          <template #default="{ row }">
+            <el-tag
+              :type="userTypeTagType(row.userType)"
+              size="small"
+            >
+              {{ userTypeLabel(row.userType) }}
+            </el-tag>
           </template>
         </el-table-column>
         <el-table-column label="状态" width="90">
@@ -147,6 +169,9 @@
         <el-descriptions-item label="认证">
           {{ current.verified === 1 ? '已认证' : '未认证' }}
         </el-descriptions-item>
+        <el-descriptions-item label="用户类型">
+          {{ userTypeLabel(current.userType) }}
+        </el-descriptions-item>
         <el-descriptions-item label="状态">{{ statusLabel(current.status) }}</el-descriptions-item>
         <el-descriptions-item label="最后登录">{{ current.lastLoginAt || '-' }}</el-descriptions-item>
         <el-descriptions-item label="注册时间">{{ current.createdAt || '-' }}</el-descriptions-item>
@@ -198,6 +223,7 @@ import {
   adjustUser,
   type AdminUserVO,
   type UserStatus,
+  type UserType,
   type AdjustUserParams,
 } from '@/api/admin-user'
 
@@ -207,10 +233,16 @@ const total = ref(0)
 const page = ref(1)
 const pageSize = ref(10)
 
-const filter = reactive<{ keyword?: string; status?: UserStatus; verified?: number }>({
+const filter = reactive<{
+  keyword?: string
+  status?: UserStatus
+  verified?: number
+  userType?: UserType
+}>({
   keyword: undefined,
   status: undefined,
   verified: undefined,
+  userType: undefined,
 })
 
 async function loadList() {
@@ -222,6 +254,7 @@ async function loadList() {
       keyword: filter.keyword || undefined,
       status: filter.status,
       verified: filter.verified,
+      userType: filter.userType,
     })
     list.value = res.list || []
     total.value = res.total || 0
@@ -241,6 +274,7 @@ function handleReset() {
   filter.keyword = undefined
   filter.status = undefined
   filter.verified = undefined
+  filter.userType = undefined
   page.value = 1
   loadList()
 }
@@ -262,6 +296,14 @@ function statusLabel(s: UserStatus) {
 
 function statusTagType(s: UserStatus): 'success' | 'info' | 'danger' {
   return s === 'ACTIVE' ? 'success' : s === 'INACTIVE' ? 'info' : 'danger'
+}
+
+function userTypeLabel(t?: UserType): string {
+  return t === 'enterprise' ? '企业' : '个人'
+}
+
+function userTypeTagType(t?: UserType): 'info' | 'primary' {
+  return t === 'enterprise' ? 'primary' : 'info'
 }
 
 // 详情

@@ -45,6 +45,9 @@ public class AdminUserService {
         if (query.getVerified() != null) {
             wrapper.eq(User::getVerified, query.getVerified());
         }
+        if (StringUtils.hasText(query.getUserType())) {
+            wrapper.eq(User::getUserType, query.getUserType());
+        }
 
         Page<User> result = userMapper.selectPage(page, wrapper);
         return PageResult.of(result.convert(this::toVO));
@@ -125,6 +128,7 @@ public class AdminUserService {
         vo.setCompletedTasks(u.getCompletedTasks());
         vo.setVerified(u.getVerified());
         vo.setStatus(u.getStatus());
+        vo.setUserType(u.getUserType());
         vo.setLastLoginAt(u.getLastLoginAt());
         vo.setCreatedAt(u.getCreatedAt());
         return vo;
