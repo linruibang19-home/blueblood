@@ -147,6 +147,16 @@ export function getOrderList(
   })
 }
 
+/** 强制关闭订单：POST /admin/order/{id}/close */
+export function closeOrder(id: number): Promise<void> {
+  return request.post<unknown, void>(`/admin/order/${id}/close`)
+}
+
+/** 订单详情(含里程碑,复用用户端 /task/orders/{id}):GET /task/orders/{id} */
+export function getOrderDetail(id: number): Promise<any> {
+  return request.get<unknown, any>(`/task/orders/${id}`)
+}
+
 // ==================== 里程碑提交 + 审核 ====================
 
 export type MilestoneStatus =

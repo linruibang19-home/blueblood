@@ -25,13 +25,13 @@ export const menuItems: MenuItem[] = [
   { path: '/dashboard', title: '工作台', icon: 'Odometer', group: '工作台' },
 
   // 系统管理
-  { path: '/system/user', title: '用户管理', icon: 'User', group: '系统管理' },
-  { path: '/system/verification', title: '认证审核', icon: 'CircleCheck', group: '系统管理' },
-  { path: '/system/notification', title: '通知管理', icon: 'Bell', group: '系统管理' },
-  { path: '/system/config', title: '系统配置', icon: 'Setting', group: '系统管理' },
-  { path: '/system/permission', title: '权限管理', icon: 'Lock', group: '系统管理' },
-  { path: '/system/enterprise', title: '企业认证', icon: 'OfficeBuilding', group: '系统管理' },
-  { path: '/system/log', title: '操作日志', icon: 'Document', group: '系统管理' },
+  { path: '/system/user', title: '用户管理', icon: 'User', group: '平台运营' },
+  { path: '/system/verification', title: '认证审核', icon: 'CircleCheck', group: '平台运营' },
+  { path: '/system/notification', title: '通知管理', icon: 'Bell', group: '平台运营' },
+  { path: '/system/config', title: '系统配置', icon: 'Setting', group: '平台运营' },
+  { path: '/system/permission', title: '权限管理', icon: 'Lock', group: '平台运营' },
+  { path: '/system/enterprise', title: '企业认证', icon: 'OfficeBuilding', group: '平台运营' },
+  { path: '/system/log', title: '操作日志', icon: 'Document', group: '平台运营' },
 
   // 社区管理
   { path: '/community/group', title: '小组管理', icon: 'UserFilled', group: '社区管理' },
@@ -42,17 +42,17 @@ export const menuItems: MenuItem[] = [
   { path: '/edu/assignment', title: '作业管理', icon: 'EditPen', group: '教育管理' },
 
   // 任务管理
-  { path: '/task/task', title: '任务管理', icon: 'List', group: '任务管理' },
-  { path: '/task/order', title: '接单管理', icon: 'Tickets', group: '任务管理' },
-  { path: '/task/milestone', title: '里程碑审核', icon: 'Flag', group: '任务管理' },
+  { path: '/task/task', title: '任务管理', icon: 'List', group: '机会管理' },
+  { path: '/task/order', title: '接单管理', icon: 'Tickets', group: '机会管理' },
+  { path: '/task/milestone', title: '里程碑审核', icon: 'Flag', group: '机会管理' },
 
   // 财务管理
   { path: '/finance/income', title: '收益结算', icon: 'Money', group: '财务管理' },
   { path: '/finance/withdraw', title: '提现管理', icon: 'Wallet', group: '财务管理' },
 
   // 活动管理
-  { path: '/activity/hackathon', title: '黑客松管理', icon: 'Trophy', group: '活动管理' },
-  { path: '/activity/job', title: '岗位管理', icon: 'Briefcase', group: '活动管理' },
+  { path: '/activity/hackathon', title: '黑客松管理', icon: 'Trophy', group: '机会管理' },
+  { path: '/activity/job', title: '岗位管理', icon: 'Briefcase', group: '机会管理' },
 ]
 
 /**

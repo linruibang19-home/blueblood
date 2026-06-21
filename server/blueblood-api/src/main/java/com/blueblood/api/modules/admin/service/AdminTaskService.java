@@ -163,6 +163,20 @@ public class AdminTaskService {
         return PageResult.of(result.convert(o -> toOrderVO(o, taskTitleMap, userMap)));
     }
 
+    /** 强制关闭订单(平台介入终止,置 rejected)。 */
+    @Transactional
+    public void closeOrder(Long orderId) {
+        TaskOrder order = orderMapper.selectById(orderId);
+        if (order == null || order.getDeletedAt() != null) {
+            throw new BusinessException(ResultCode.DATA_NOT_FOUND, "订单不存在");
+        }
+        TaskOrder patch = new TaskOrder();
+        patch.setId(orderId);
+        patch.setStatus("rejected");
+        patch.setRemark("平台强制关闭");
+        orderMapper.updateById(patch);
+    }
+
     // ==================== 里程碑提交 ====================
 
     public PageResult<AdminMilestoneSubmissionVO> pageMilestoneSubmission(AdminMilestoneSubmissionQuery query) {

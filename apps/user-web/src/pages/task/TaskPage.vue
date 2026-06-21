@@ -2,21 +2,18 @@
   <MobileTabLayout>
     <template #default>
       <div class="task-page">
-        <!-- Tab 切换 -->
         <van-tabs v-model:active="activeTab" sticky offset-top="0">
+          <!-- 任务大厅 -->
           <van-tab title="任务大厅" name="hall">
             <div class="tab-content">
-              <!-- 发布 / 我发布的 入口 -->
               <div class="quick-actions">
                 <van-button size="small" type="primary" plain icon="edit" @click="router.push('/tasks/publish')">发布任务</van-button>
                 <van-button size="small" type="default" plain icon="manager-o" @click="router.push('/tasks/published')">我发布的</van-button>
+                <van-button size="small" type="default" plain icon="orders-o" @click="router.push('/tasks/my')">我的任务</van-button>
               </div>
-              <!-- 搜索框 -->
               <div class="search-section">
                 <van-search v-model="keyword" placeholder="搜索任务标题..." shape="round" @search="onSearch" />
               </div>
-
-              <!-- 分类筛选 -->
               <div class="category-filter">
                 <div
                   v-for="cat in categories"
@@ -29,8 +26,6 @@
                   <span>{{ cat.name }}</span>
                 </div>
               </div>
-
-              <!-- 任务列表 -->
               <div class="task-list">
                 <van-loading v-if="loading" type="spinner" class="page-loading" />
                 <template v-else>
@@ -51,22 +46,10 @@
                     </div>
                     <div class="task-footer">
                       <div class="task-meta">
-                        <span class="meta-item">
-                          <van-icon name="user-o" /> {{ task.employerName }}
-                        </span>
-                        <span class="meta-item">
-                          <van-icon name="clock-o" /> {{ task.deadline }}
-                        </span>
+                        <span class="meta-item"><van-icon name="user-o" /> {{ task.employerName }}</span>
+                        <span class="meta-item"><van-icon name="clock-o" /> {{ task.deadline }}</span>
                       </div>
-                      <div class="task-slots">
-                        <span class="slots-num">{{ task.slotsLeft }}</span>/{{ task.totalSlots }}名额
-                      </div>
-                    </div>
-                    <div class="task-level-bar">
-                      <span>LV{{ task.levelRequired }}可接</span>
-                      <div class="level-bar">
-                        <div class="level-fill" :style="{ width: '30%' }" />
-                      </div>
+                      <div class="task-slots"><span class="slots-num">{{ task.slotsLeft }}</span>/{{ task.totalSlots }}名额</div>
                     </div>
                   </div>
                   <van-empty v-if="!tasks.length" description="暂无任务" />
@@ -75,47 +58,51 @@
             </div>
           </van-tab>
 
-          <van-tab title="我的任务" name="my">
+          <!-- 黑客松 -->
+          <van-tab title="黑客松" name="hackathon">
             <div class="tab-content">
-              <van-loading v-if="loadingOrders" type="spinner" class="page-loading" />
-              <div v-else-if="myTaskOrders.length" class="my-task-list">
-                <div
-                  v-for="order in myTaskOrders"
-                  :key="order.id"
-                  class="my-task-card"
-                  @click="goTaskExecution(order.id)"
-                >
-                  <div class="my-task-header">
-                    <h4 class="my-task-title">{{ order.taskTitle }}</h4>
-                    <StatusBadge :label="getOrderStatusLabel(order.status)" :type="getOrderStatusType(order.status)" />
-                  </div>
-                  <div class="my-task-progress">
-                    <span class="progress-label">整体进度</span>
-                    <div class="progress-bar-wrap">
-                      <div class="progress-bar-track">
-                        <div class="progress-bar-fill" :style="{ width: order.progress + '%' }" />
-                      </div>
-                      <span class="progress-value">{{ order.progress }}%</span>
+              <div v-if="hackathons.length" class="hackathon-list">
+                <div v-for="h in hackathons" :key="h.id" class="hackathon-card" @click="goHackathonDetail(h.id)">
+                  <img :src="h.coverImage" class="hackathon-cover" />
+                  <div class="hackathon-info">
+                    <div class="hackathon-header">
+                      <h4 class="hackathon-title">{{ h.title }}</h4>
+                      <StatusBadge :label="hackathonStatusLabel(h.status)" :type="hackathonStatusType(h.status)" />
                     </div>
-                  </div>
-                  <div class="milestone-brief">
-                    <span class="brief-label">里程碑</span>
-                    <div class="milestone-dots">
-                      <span
-                        v-for="m in order.milestones"
-                        :key="m.id"
-                        class="milestone-dot"
-                        :class="getMilestoneStatusClass(m.status)"
-                        :title="m.title"
-                      />
+                    <p class="hackathon-desc">{{ h.description }}</p>
+                    <div class="hackathon-meta">
+                      <span class="meta-item"><van-icon name="award-o" /> 奖金 ¥{{ (h.prizePool / 1000).toFixed(0) }}k</span>
+                      <span class="meta-item"><van-icon name="friends-o" /> {{ h.currentTeams }}/{{ h.maxTeams }}队</span>
                     </div>
-                  </div>
-                  <div class="my-task-footer">
-                    <span class="my-task-enter">点击查看详情 <van-icon name="arrow" /></span>
                   </div>
                 </div>
               </div>
-              <van-empty v-else description="暂无进行中的任务" />
+              <van-empty v-else description="暂无赛事" />
+            </div>
+          </van-tab>
+
+          <!-- AI 岗位 -->
+          <van-tab title="AI岗位" name="job">
+            <div class="tab-content">
+              <div v-if="jobs.length" class="job-list">
+                <div v-for="j in jobs" :key="j.id" class="job-card" @click="goJobDetail(j.id)">
+                  <div class="job-header">
+                    <img :src="j.companyLogo" class="job-logo" />
+                    <div class="job-info">
+                      <h4 class="job-title">{{ j.title }}</h4>
+                      <span class="job-company">{{ j.company }}</span>
+                    </div>
+                  </div>
+                  <div class="job-tags">
+                    <van-tag v-for="tag in j.tags" :key="tag" plain>{{ tag }}</van-tag>
+                  </div>
+                  <div class="job-footer">
+                    <span class="job-salary">{{ j.salary }}</span>
+                    <span class="meta-item"><van-icon name="location-o" /> {{ j.location }}</span>
+                  </div>
+                </div>
+              </div>
+              <van-empty v-else description="暂无岗位" />
             </div>
           </van-tab>
         </van-tabs>
@@ -125,22 +112,25 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onActivated } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import MobileTabLayout from '@/layouts/MobileTabLayout.vue'
 import StatusBadge from '@/components/StatusBadge.vue'
-import { getTaskList, getTaskCategories, getMyTaskOrders } from '@/api/task'
-import type { Task, TaskCategory, TaskOrder } from '@/types/task'
+import { getTaskList, getTaskCategories } from '@/api/task'
+import { mockHackathons } from '@/mock/hackathons'
+import { mockJobs } from '@/mock/jobs'
+import type { Task, TaskCategory } from '@/types/task'
+import type { Hackathon, Job } from '@/types/course'
 
 const router = useRouter()
 const activeTab = ref('hall')
+
+// 任务大厅
 const tasks = ref<Task[]>([])
 const categories = ref<TaskCategory[]>([])
 const selectedCategory = ref('全部')
-const myTaskOrders = ref<TaskOrder[]>([])
 const keyword = ref('')
 const loading = ref(false)
-const loadingOrders = ref(false)
 
 async function fetchTasks() {
   loading.value = true
@@ -156,93 +146,39 @@ async function fetchTasks() {
   }
 }
 
-async function fetchOrders() {
-  loadingOrders.value = true
-  try {
-    myTaskOrders.value = await getMyTaskOrders()
-  } catch {
-    myTaskOrders.value = []
-  } finally {
-    loadingOrders.value = false
-  }
-}
-
 onMounted(async () => {
   await Promise.all([
     fetchTasks(),
     (async () => { categories.value = await getTaskCategories() })(),
-    fetchOrders(),
   ])
-})
-
-// 提交里程碑返回后刷新我的任务列表
-onActivated(() => {
-  fetchOrders()
 })
 
 function selectCategory(name: string) {
   selectedCategory.value = name
   fetchTasks()
 }
-
-function onSearch() {
-  fetchTasks()
-}
-
-function goTaskDetail(id: string) {
-  router.push(`/tasks/detail/${id}`)
-}
-
-function goTaskExecution(id: string) {
-  router.push(`/tasks/execution/${id}`)
-}
+function onSearch() { fetchTasks() }
+function goTaskDetail(id: string) { router.push(`/tasks/detail/${id}`) }
 
 function getCategoryColor(category: string) {
   const map: Record<string, string> = {
-    'Agent配置': 'primary',
-    '自动化脚本': 'success',
-    '流程梳理': 'warning',
-    '报告生成': 'danger',
-    '数据处理': 'primary',
+    'Agent配置': 'primary', '自动化脚本': 'success', '流程梳理': 'warning',
+    '报告生成': 'danger', '数据处理': 'primary',
   }
   return (map[category] as any) || 'primary'
 }
 
-function getOrderStatusLabel(status: string) {
-  const map: Record<string, string> = {
-    applied: '已报名',
-    accepted: '已接单',
-    in_progress: '执行中',
-    wait_acceptance: '待验收',
-    passed: '验收通过',
-    rejected: '已驳回',
-    settling: '结算中',
-    settled: '已结算',
-  }
-  return map[status] || status
-}
+// 黑客松 / 岗位(机会域,数据源同原成长页;后续可接企业发布列表)
+const hackathons = ref<Hackathon[]>(mockHackathons)
+const jobs = ref<Job[]>(mockJobs)
+function goHackathonDetail(id: string) { router.push(`/grow/hackathon/${id}`) }
+function goJobDetail(id: string) { router.push(`/grow/job/${id}`) }
 
-function getOrderStatusType(status: string) {
-  const map: Record<string, 'primary' | 'success' | 'warning' | 'danger' | 'default'> = {
-    in_progress: 'primary',
-    wait_acceptance: 'warning',
-    passed: 'success',
-    rejected: 'danger',
-    settling: 'warning',
-    settled: 'success',
-  }
-  return map[status] || 'default'
+function hackathonStatusLabel(s: string) {
+  return s === 'signup' ? '报名中' : s === 'ongoing' ? '进行中' : '已结束'
 }
-
-function getMilestoneStatusClass(status: string) {
-  const map: Record<string, string> = {
-    approved: 'dot-approved',
-    in_progress: 'dot-progress',
-    submitted: 'dot-submitted',
-    not_started: 'dot-pending',
-    rejected: 'dot-rejected',
-  }
-  return map[status] || 'dot-pending'
+function hackathonStatusType(s: string): 'primary' | 'success' | 'default' {
+  return s === 'signup' ? 'primary' : s === 'ongoing' ? 'success' : 'default'
 }
 </script>
 
@@ -252,270 +188,62 @@ function getMilestoneStatusClass(status: string) {
   background-color: var(--bg-primary);
   padding-bottom: 60px;
 }
+.tab-content { padding: var(--spacing-lg); }
 
-.tab-content {
-  padding: var(--spacing-lg);
-}
+.quick-actions { display: flex; gap: var(--spacing-sm); margin-bottom: var(--spacing-md); }
+.search-section { margin-bottom: var(--spacing-md); }
+.page-loading { display: flex; justify-content: center; padding: 40px 0; }
 
-.quick-actions {
-  display: flex;
-  gap: var(--spacing-sm);
-  margin-bottom: var(--spacing-md);
-}
-
-.search-section {
-  margin-bottom: var(--spacing-md);
-}
-
-.page-loading {
-  display: flex;
-  justify-content: center;
-  padding: 40px 0;
-}
-
-.category-filter {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing-sm);
-  padding-bottom: var(--spacing-md);
-}
-
-.category-filter::-webkit-scrollbar { display: none; }
-
+.category-filter { display: flex; flex-wrap: wrap; gap: var(--spacing-sm); padding-bottom: var(--spacing-md); }
 .category-item {
-  display: flex;
-  align-items: center;
-  gap: 4px;
+  display: flex; align-items: center; gap: 4px;
   padding: var(--spacing-sm) var(--spacing-md);
-  background: var(--bg-card);
-  border-radius: 20px;
-  font-size: var(--font-size-sm);
-  color: var(--text-secondary);
-  white-space: nowrap;
-  cursor: pointer;
-  transition: all 0.2s;
+  background: var(--bg-card); border-radius: 20px;
+  font-size: var(--font-size-sm); color: var(--text-secondary);
+  white-space: nowrap; cursor: pointer; transition: all 0.2s;
 }
+.category-item.active { background: var(--primary); color: #fff; }
 
-.category-item.active {
-  background: var(--primary);
-  color: #fff;
-}
-
-.task-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
-}
-
+.task-list { display: flex; flex-direction: column; gap: var(--spacing-md); }
 .task-card {
-  background: var(--bg-card);
-  border-radius: var(--radius-md);
-  padding: var(--spacing-lg);
-  box-shadow: var(--shadow-sm);
-  cursor: pointer;
+  background: var(--bg-card); border-radius: var(--radius-md);
+  padding: var(--spacing-lg); box-shadow: var(--shadow-sm); cursor: pointer;
 }
-
-.task-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--spacing-sm);
-}
-
-.task-reward {
-  font-size: var(--font-size-lg);
-  font-weight: 700;
-  color: var(--warning);
-}
-
+.task-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-sm); }
+.task-reward { font-size: var(--font-size-lg); font-weight: 700; color: var(--warning); }
 .task-title {
-  font-size: var(--font-size-md);
-  font-weight: 600;
-  color: var(--text-primary);
+  font-size: var(--font-size-md); font-weight: 600; color: var(--text-primary);
   margin-bottom: var(--spacing-sm);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  overflow: hidden; text-overflow: ellipsis;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
 }
+.task-desc { font-size: var(--font-size-sm); color: var(--text-tertiary); line-height: 1.5; margin-bottom: var(--spacing-sm); }
+.task-tags { display: flex; flex-wrap: wrap; gap: var(--spacing-xs); margin-bottom: var(--spacing-md); }
+.task-footer { display: flex; justify-content: space-between; align-items: center; }
+.task-meta { display: flex; gap: var(--spacing-md); }
+.meta-item { display: flex; align-items: center; gap: 4px; font-size: var(--font-size-xs); color: var(--text-tertiary); }
+.task-slots { font-size: var(--font-size-xs); color: var(--text-tertiary); }
+.slots-num { font-weight: 600; color: var(--primary); }
 
-.task-desc {
-  font-size: var(--font-size-sm);
-  color: var(--text-tertiary);
-  line-height: 1.5;
-  margin-bottom: var(--spacing-sm);
-}
+/* 黑客松 */
+.hackathon-list { display: flex; flex-direction: column; gap: var(--spacing-md); }
+.hackathon-card { background: var(--bg-card); border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow-sm); }
+.hackathon-cover { width: 100%; height: 140px; object-fit: cover; }
+.hackathon-info { padding: var(--spacing-lg); }
+.hackathon-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-sm); }
+.hackathon-title { font-size: var(--font-size-md); font-weight: 600; color: var(--text-primary); }
+.hackathon-desc { font-size: var(--font-size-sm); color: var(--text-secondary); margin-bottom: var(--spacing-md); }
+.hackathon-meta { display: flex; gap: var(--spacing-lg); }
 
-.task-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing-xs);
-  margin-bottom: var(--spacing-md);
-}
-
-.task-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--spacing-sm);
-}
-
-.task-meta {
-  display: flex;
-  gap: var(--spacing-md);
-}
-
-.meta-item {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: var(--font-size-xs);
-  color: var(--text-tertiary);
-}
-
-.task-slots {
-  font-size: var(--font-size-xs);
-  color: var(--text-tertiary);
-}
-
-.slots-num {
-  font-weight: 600;
-  color: var(--primary);
-}
-
-.task-level-bar {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  font-size: var(--font-size-xs);
-  color: var(--text-tertiary);
-}
-
-.level-bar {
-  flex: 1;
-  height: 4px;
-  background: var(--bg-tertiary);
-  border-radius: 2px;
-  overflow: hidden;
-}
-
-.level-fill {
-  height: 100%;
-  background: var(--accent);
-  border-radius: 2px;
-}
-
-/* 我的任务 */
-.my-task-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
-}
-
-.my-task-card {
-  background: var(--bg-card);
-  border-radius: var(--radius-md);
-  padding: var(--spacing-lg);
-  box-shadow: var(--shadow-sm);
-  cursor: pointer;
-}
-
-.my-task-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--spacing-md);
-}
-
-.my-task-title {
-  font-size: var(--font-size-md);
-  font-weight: 600;
-  color: var(--text-primary);
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  margin-right: var(--spacing-sm);
-}
-
-.my-task-progress {
-  margin-bottom: var(--spacing-md);
-}
-
-.progress-label {
-  font-size: var(--font-size-xs);
-  color: var(--text-tertiary);
-  display: block;
-  margin-bottom: var(--spacing-xs);
-}
-
-.progress-bar-wrap {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-}
-
-.progress-bar-track {
-  flex: 1;
-  height: 6px;
-  background: var(--bg-tertiary);
-  border-radius: 3px;
-  overflow: hidden;
-}
-
-.progress-bar-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--primary), var(--accent));
-  border-radius: 3px;
-}
-
-.progress-value {
-  font-size: var(--font-size-sm);
-  font-weight: 600;
-  color: var(--primary);
-  width: 40px;
-  text-align: right;
-}
-
-.milestone-brief {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
-  margin-bottom: var(--spacing-md);
-}
-
-.brief-label {
-  font-size: var(--font-size-xs);
-  color: var(--text-tertiary);
-}
-
-.milestone-dots {
-  display: flex;
-  gap: 6px;
-}
-
-.milestone-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--bg-tertiary);
-}
-
-.dot-approved { background: var(--success); }
-.dot-progress { background: var(--primary); }
-.dot-submitted { background: var(--warning); }
-.dot-rejected { background: var(--danger); }
-
-.my-task-footer {
-  display: flex;
-  justify-content: flex-end;
-}
-
-.my-task-enter {
-  font-size: var(--font-size-xs);
-  color: var(--text-tertiary);
-  display: flex;
-  align-items: center;
-}
+/* 岗位 */
+.job-list { display: flex; flex-direction: column; gap: var(--spacing-md); }
+.job-card { background: var(--bg-card); border-radius: var(--radius-md); padding: var(--spacing-lg); box-shadow: var(--shadow-sm); }
+.job-header { display: flex; align-items: center; gap: var(--spacing-md); margin-bottom: var(--spacing-md); }
+.job-logo { width: 40px; height: 40px; border-radius: var(--radius-sm); object-fit: cover; }
+.job-info { flex: 1; }
+.job-title { font-size: var(--font-size-md); font-weight: 500; color: var(--text-primary); }
+.job-company { font-size: var(--font-size-xs); color: var(--text-tertiary); }
+.job-tags { display: flex; flex-wrap: wrap; gap: var(--spacing-xs); margin-bottom: var(--spacing-md); }
+.job-footer { display: flex; justify-content: space-between; align-items: center; }
+.job-salary { font-size: var(--font-size-md); font-weight: 600; color: var(--warning); }
 </style>

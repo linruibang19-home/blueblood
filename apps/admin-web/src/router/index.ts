@@ -117,6 +117,12 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/task/MilestoneReview.vue'),
         meta: { title: '里程碑审核' },
       },
+      {
+        path: 'task/order',
+        name: 'TaskOrder',
+        component: () => import('@/views/task/OrderManage.vue'),
+        meta: { title: '接单管理' },
+      },
       // 财务管理 - 收益结算 / 提现管理（专用视图）
       {
         path: 'finance/income',
@@ -149,6 +155,7 @@ const routes: RouteRecordRaw[] = [
             item.path !== '/edu/course' &&
             item.path !== '/edu/assignment' &&
             item.path !== '/task/task' &&
+            item.path !== '/task/order' &&
             item.path !== '/task/milestone' &&
             item.path !== '/finance/income' &&
             item.path !== '/finance/withdraw'

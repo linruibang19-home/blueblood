@@ -60,6 +60,12 @@ const routes: RouteRecordRaw[] = [
     meta: { tab: 'grow' },
   },
   {
+    path: '/grow/courses',
+    name: 'CourseList',
+    component: () => import('@/pages/grow/CourseListPage.vue'),
+    meta: { tab: 'grow' },
+  },
+  {
     path: '/grow/course/:id',
     name: 'CourseDetail',
     component: () => import('@/pages/grow/CourseDetail.vue'),
@@ -99,6 +105,12 @@ const routes: RouteRecordRaw[] = [
     path: '/tasks',
     name: 'Tasks',
     component: () => import('@/pages/task/TaskPage.vue'),
+    meta: { tab: 'tasks' },
+  },
+  {
+    path: '/tasks/my',
+    name: 'MyTasks',
+    component: () => import('@/pages/task/MyTasksPage.vue'),
     meta: { tab: 'tasks' },
   },
   {
