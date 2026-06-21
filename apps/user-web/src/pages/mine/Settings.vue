@@ -40,8 +40,11 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { showToast } from 'vant'
 import SubPageLayout from '@/layouts/SubPageLayout.vue'
+import { logout as apiLogout } from '@/api/auth'
+import { useUserStore } from '@/stores/user'
 
 const router = useRouter()
+const userStore = useUserStore()
 const settings = ref({
   taskNotification: true,
   bbsNotification: true,
@@ -59,9 +62,15 @@ function handleBbsNotification(val: boolean) {
   showToast(val ? '社区通知已开启' : '社区通知已关闭')
 }
 
-function handleLogout() {
+async function handleLogout() {
+  // 1. 通知后端（无状态：丢弃令牌；后续可接 Redis 黑名单）
+  await apiLogout()
+  // 2. 清本地 token + 用户态
+  localStorage.removeItem('token')
+  userStore.logout()
   showToast('已退出登录')
-  router.push('/discover')
+  // 3. 回登录页，避免留在需登录页触发 401 空白
+  router.replace('/login')
 }
 </script>
 

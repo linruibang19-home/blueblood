@@ -49,54 +49,14 @@ request.interceptors.response.use(
 )
 
 // -----------------------------------------------------------------------------
-// 开发联调：API 模式下若无 token，自动以演示账号 lin/123456 登录拿 token
-// 仅用于前端联调，避免阶段一无登录页时各页面无法读取真实接口。
-// 生产环境请勿依赖，正式登录页接入后可移除。
+// 登录态守卫：API 模式下各页面调用 ensureReady() 作为请求前置钩子。
+// 登录页已接入，不再做 dev 自动登录（否则退出后会被自动登录回演示账号 lin，
+// 导致“退出登录”失效且无法体验新注册账号）。无 token 时直接返回，
+// 后续接口返回 401 由响应拦截器清理 token、由业务页面引导登录。
 // -----------------------------------------------------------------------------
-let loginPromise: Promise<string> | null = null
-
-export async function ensureDevToken(): Promise<string> {
-  const existing = localStorage.getItem('token')
-  if (existing) return existing
-
-  if (!loginPromise) {
-    loginPromise = (async () => {
-      // 直接用原始 axios 走 baseURL，绕过拦截器解包（登录接口需读 token 字段）
-      const resp = await axios.post(
-        `${request.defaults.baseURL}/auth/login`,
-        { username: 'lin', password: '123456' },
-        { headers: { 'Content-Type': 'application/json' } }
-      )
-      const body = resp.data
-      const token: string | undefined =
-        body?.data?.token || body?.data?.accessToken || body?.token
-      if (!token) {
-        throw new Error(
-          `[dev-auto-login] 登录响应未包含 token 字段，实际返回：${JSON.stringify(body).slice(0, 300)}`
-        )
-      }
-      localStorage.setItem('token', token)
-      return token
-    })().finally(() => {
-      loginPromise = null
-    })
-  }
-  return loginPromise
-}
-
-/**
- * 在 API 模式下发起请求前调用：若无 token 则先静默登录，再放行。
- * Mock 模式下直接 resolve，不影响原有 Mock 流程。
- */
 export async function ensureReady(): Promise<void> {
-  if (!USE_API) return
-  if (localStorage.getItem('token')) return
-  try {
-    await ensureDevToken()
-  } catch (e) {
-    // 自动登录失败不应阻塞页面渲染，仅打印告警；后续真实接口会返回 401 由业务处理
-    console.warn('[dev-auto-login] 演示账号登录失败：', e)
-  }
+  // 登录页接入后：无 token 即放行（由各页面对 401 做降级），不再自动登录
+  return
 }
 
 export default request

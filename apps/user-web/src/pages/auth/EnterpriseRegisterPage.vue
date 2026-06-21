@@ -76,7 +76,7 @@
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { showToast, showSuccessToast, type UploaderFileListItem } from 'vant'
-import { register, uploadFile } from '@/api/auth'
+import { register, login, uploadFile } from '@/api/auth'
 import { submitEnterpriseApplication } from '@/api/enterprise'
 
 const router = useRouter()
@@ -123,14 +123,16 @@ async function handleSubmit() {
   }
   loading.value = true
   try {
-    // 1. 创建企业账号
+    // 1. 创建企业账号（user_type 由 admin 审核通过后置为 enterprise，注册时不传）
     await register({
       username: form.username,
       password: form.password,
-      userType: 'enterprise',
       phone: form.contactPhone,
     })
-    // 2. 提交企业认证申请（此时无需 token，或后端允许新注册企业用户提交）
+    // 2. 自动登录拿 token —— 企业认证申请接口需登录态，否则 401
+    const res = await login(form.username, form.password)
+    localStorage.setItem('token', res.token)
+    // 3. 提交企业认证申请（PENDING，待 admin 审核通过后即可发布岗位/黑客松）
     await submitEnterpriseApplication({
       companyName: form.companyName,
       creditCode: form.creditCode,
@@ -139,7 +141,7 @@ async function handleSubmit() {
       contactPhone: form.contactPhone,
     })
     showSuccessToast('申请已提交，待审核')
-    setTimeout(() => router.replace('/login'), 1200)
+    setTimeout(() => router.replace('/mine'), 1200)
   } catch (e) {
     showToast((e as Error).message || '提交失败，请稍后重试')
   } finally {

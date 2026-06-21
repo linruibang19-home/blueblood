@@ -141,10 +141,11 @@ const levelProgress = computed(() => {
 })
 
 onMounted(async () => {
+  // 未登录时各接口会 401，各自 try/catch 降级，避免一个失败拖垮整页
   const [userData, walletData, unreadData] = await Promise.all([
-    getCurrentUser(),
-    getWalletSummary(),
-    getUnreadCount()
+    getCurrentUser().catch(() => null),
+    getWalletSummary().catch(() => null),
+    getUnreadCount().catch(() => 0),
   ])
   user.value = userData
   wallet.value = walletData

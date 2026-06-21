@@ -59,7 +59,7 @@ public class UserService {
                 ? req.getUsername() : req.getNickname());
         user.setAvatar("");
         user.setPhone(req.getPhone() == null ? "" : req.getPhone());
-        user.setEmail("");
+        user.setEmail(req.getEmail() == null ? "" : req.getEmail());
         user.setGender(0);
         user.setLevel(1);
         user.setLevelName("新手");
