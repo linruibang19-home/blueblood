@@ -12,6 +12,12 @@ const routes: RouteRecordRaw[] = [
     meta: { tab: '' },
   },
   {
+    path: '/register',
+    name: 'Register',
+    component: () => import('@/pages/auth/RegisterPage.vue'),
+    meta: { tab: '' },
+  },
+  {
     path: '/enterprise-register',
     name: 'EnterpriseRegister',
     component: () => import('@/pages/auth/EnterpriseRegisterPage.vue'),

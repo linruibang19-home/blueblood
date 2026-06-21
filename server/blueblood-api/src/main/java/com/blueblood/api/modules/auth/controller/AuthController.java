@@ -44,6 +44,13 @@ public class AuthController {
         return Result.success(Map.of("userId", userId));
     }
 
+    @Operation(summary = "发送验证码(dev 桩返回 code 便于联调)")
+    @PostMapping("/send-code")
+    public Result<Map<String, String>> sendCode(@RequestParam String target, @RequestParam String type) {
+        String code = authService.sendCode(target, type);
+        return Result.success(Map.of("code", code));
+    }
+
     @Operation(summary = "微信小程序登录(wx.login code → token，未配置 AppID 时走演示桩)")
     @PostMapping("/wx-login")
     public Result<LoginResponse> wxLogin(@Valid @RequestBody WxLoginRequest request) {

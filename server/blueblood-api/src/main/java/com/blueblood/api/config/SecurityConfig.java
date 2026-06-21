@@ -40,7 +40,7 @@ public class SecurityConfig {
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         // 认证
-                        .requestMatchers("/auth/login", "/auth/register", "/auth/wx-login", "/auth/captcha/**").permitAll()
+                        .requestMatchers("/auth/login", "/auth/register", "/auth/wx-login", "/auth/send-code", "/auth/captcha/**").permitAll()
                         // 健康检查
                         .requestMatchers("/health", "/health/**").permitAll()
                         // 上传资源

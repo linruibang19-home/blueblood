@@ -25,6 +25,7 @@ public class AuthService {
 
     private final UserService userService;
     private final JwtUtil jwtUtil;
+    private final VerificationCodeService verificationCodeService;
 
     /** 微信小程序 AppID / AppSecret；未配置时 wxLogin 走演示桩(发 lin 的 token) */
     @Value("${wx.appid:}")
@@ -39,7 +40,29 @@ public class AuthService {
     }
 
     public Long register(RegisterRequest req) {
+        String type = StringUtils.hasText(req.getRegisterType()) ? req.getRegisterType() : "username";
+        if ("email".equalsIgnoreCase(type)) {
+            if (!verificationCodeService.verify(req.getEmail(), "email", req.getCode())) {
+                throw new com.blueblood.api.common.exception.BusinessException(
+                        com.blueblood.api.common.result.ResultCode.BAD_REQUEST, "验证码错误或已过期");
+            }
+            req.setUsername(req.getEmail());
+            req.setPhone("");
+            return userService.register(req);
+        } else if ("phone".equalsIgnoreCase(type)) {
+            if (!verificationCodeService.verify(req.getPhone(), "phone", req.getCode())) {
+                throw new com.blueblood.api.common.exception.BusinessException(
+                        com.blueblood.api.common.result.ResultCode.BAD_REQUEST, "验证码错误或已过期");
+            }
+            req.setUsername(req.getPhone());
+            return userService.register(req);
+        }
         return userService.register(req);
+    }
+
+    /** 发送验证码（桩：返回 code 便于 dev 联调） */
+    public String sendCode(String target, String type) {
+        return verificationCodeService.sendCode(target, type);
     }
 
     /**

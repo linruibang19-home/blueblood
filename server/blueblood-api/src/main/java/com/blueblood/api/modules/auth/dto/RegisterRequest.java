@@ -9,9 +9,7 @@ import lombok.Data;
 @Schema(description = "注册请求")
 public class RegisterRequest {
 
-    @Schema(description = "用户名(登录账号)", example = "lin")
-    @NotBlank(message = "用户名不能为空")
-    @Size(min = 3, max = 32, message = "用户名长度需 3-32 位")
+    @Schema(description = "用户名(username 注册必填; email/phone 注册可不传,由后端自动设置)")
     private String username;
 
     @Schema(description = "密码", example = "123456")
@@ -24,4 +22,13 @@ public class RegisterRequest {
 
     @Schema(description = "手机号")
     private String phone;
+
+    @Schema(description = "注册方式: username(默认) / email / phone")
+    private String registerType;
+
+    @Schema(description = "邮箱(email 注册时必填)")
+    private String email;
+
+    @Schema(description = "验证码(email/phone 注册时必填)")
+    private String code;
 }

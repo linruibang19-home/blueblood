@@ -25,18 +25,25 @@ export async function logout(): Promise<void> {
 
 /** 注册（个人/企业账号创建） */
 export async function register(payload: {
-  username: string
+  registerType?: 'username' | 'email' | 'phone'
+  username?: string
   password: string
   userType?: string
   phone?: string
   email?: string
+  code?: string
+  [key: string]: any
 }): Promise<any> {
-  return request.post('/auth/register', {
-    username: payload.username,
-    password: payload.password,
-    userType: payload.userType || 'enterprise',
-    phone: payload.phone || '',
-    email: payload.email || '',
+  return request.post('/auth/register', payload)
+}
+
+/** 发送验证码（邮箱/手机） → dev 桩返回 { code } */
+export async function sendCode(
+  target: string,
+  type: 'email' | 'phone',
+): Promise<{ code: string }> {
+  return request.post<any, { code: string }>('/auth/send-code', null, {
+    params: { target, type },
   })
 }
 

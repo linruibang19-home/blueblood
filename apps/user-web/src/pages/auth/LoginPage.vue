@@ -36,6 +36,8 @@
       <p class="hint">演示账号：lin / zhangming / lina / wangqiang（密码 123456）</p>
 
       <p class="enterprise-link">
+        <router-link to="/register">没有账号？去注册</router-link>
+        <span class="link-sep">·</span>
         <router-link to="/enterprise-register">企业注册 →</router-link>
       </p>
     </div>
