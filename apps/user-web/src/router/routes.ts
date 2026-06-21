@@ -102,6 +102,24 @@ const routes: RouteRecordRaw[] = [
     meta: { tab: 'tasks' },
   },
   {
+    path: '/tasks/publish',
+    name: 'TaskPublish',
+    component: () => import('@/pages/task/TaskPublish.vue'),
+    meta: { tab: '' },
+  },
+  {
+    path: '/tasks/published',
+    name: 'PublishedTasks',
+    component: () => import('@/pages/task/PublishedTasks.vue'),
+    meta: { tab: '' },
+  },
+  {
+    path: '/tasks/review',
+    name: 'EmployerReview',
+    component: () => import('@/pages/task/EmployerReview.vue'),
+    meta: { tab: '' },
+  },
+  {
     path: '/tasks/detail/:id',
     name: 'TaskDetail',
     component: () => import('@/pages/task/TaskDetail.vue'),

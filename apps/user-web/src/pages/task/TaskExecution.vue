@@ -36,7 +36,7 @@
             v-for="(milestone, i) in order.milestones"
             :key="milestone.id"
             class="milestone-item"
-            :class="{ 'current': milestone.status === 'in_progress', 'approved': milestone.status === 'approved' }"
+            :class="{ 'current': milestone.status === 'submitted', 'approved': milestone.status === 'approved' }"
           >
             <div class="milestone-left">
               <div class="milestone-dot" :class="getMilestoneClass(milestone.status)" />
@@ -49,46 +49,56 @@
               </div>
               <p class="milestone-desc">{{ milestone.description }}</p>
               <div class="milestone-meta">
-                <span><van-icon name="clock-o" /> 截止 {{ milestone.dueDate }}</span>
+                <span><van-icon name="clock-o" /> 截止 {{ milestone.dueDate || '无' }}</span>
+                <span v-if="milestone.reward" class="reward-tag"><van-icon name="gold-coin-o" /> ¥{{ milestone.reward }}</span>
+              </div>
+              <!-- 审核反馈 -->
+              <div v-if="milestone.review?.feedback && milestone.status === 'rejected'" class="review-feedback">
+                驳回原因：{{ milestone.review.feedback }}
               </div>
               <van-button
-                v-if="milestone.status === 'in_progress'"
+                v-if="canSubmit(milestone.status)"
                 type="primary"
                 size="small"
                 @click="goMilestoneSubmit(order.id, milestone.id)"
               >
-                提交里程碑
+                {{ milestone.status === 'rejected' ? '重新提交' : '提交里程碑' }}
               </van-button>
             </div>
           </div>
         </div>
       </div>
     </div>
+    <div v-else class="loading-wrap">
+      <van-loading type="spinner" />
+    </div>
   </SubPageLayout>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onActivated } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import SubPageLayout from '@/layouts/SubPageLayout.vue'
 import StatusBadge from '@/components/StatusBadge.vue'
-import { getMyTaskOrderDetail } from '@/api/task'
-import { getTaskDetail } from '@/api/task'
-import type { TaskOrder } from '@/types/task'
-import type { Task } from '@/types/task'
+import { getMyTaskOrderDetail, getTaskDetail } from '@/api/task'
+import type { TaskOrder, Task } from '@/types/task'
 
 const route = useRoute()
 const router = useRouter()
 const order = ref<TaskOrder | null>(null)
 const task = ref<Task | null>(null)
 
-onMounted(async () => {
+async function loadOrder() {
   const id = route.params.id as string
   order.value = await getMyTaskOrderDetail(id)
   if (order.value?.taskId) {
     task.value = await getTaskDetail(order.value.taskId)
   }
-})
+}
+
+onMounted(loadOrder)
+// 从里程碑提交页返回后(keep-alive)刷新订单状态
+onActivated(loadOrder)
 
 const statusLabel = computed(() => {
   const map: Record<string, string> = {
@@ -97,6 +107,7 @@ const statusLabel = computed(() => {
     passed: '验收通过',
     settling: '结算中',
     settled: '已结算',
+    rejected: '已驳回',
   }
   return map[order.value?.status || ''] || '执行中'
 })
@@ -105,6 +116,7 @@ const statusType = computed(() => {
   const s = order.value?.status
   if (s === 'passed' || s === 'settled') return 'success'
   if (s === 'wait_acceptance' || s === 'settling') return 'warning'
+  if (s === 'rejected') return 'danger'
   return 'primary'
 })
 
@@ -112,12 +124,17 @@ function goMilestoneSubmit(orderId: string, milestoneId: string) {
   router.push(`/tasks/milestone/${orderId}/${milestoneId}`)
 }
 
+// 可提交状态:未开始 / 已驳回(允许重提)
+function canSubmit(status: string) {
+  return ['not_started', 'rejected'].includes(status)
+}
+
 function getMilestoneClass(status: string) {
   const map: Record<string, string> = {
     approved: 'dot-approved',
-    in_progress: 'dot-current',
-    submitted: 'dot-submitted',
+    submitted: 'dot-current',
     not_started: 'dot-pending',
+    rejected: 'dot-rejected',
   }
   return map[status] || 'dot-pending'
 }
@@ -125,7 +142,6 @@ function getMilestoneClass(status: string) {
 function getMilestoneLabel(status: string) {
   const map: Record<string, string> = {
     approved: '已通过',
-    in_progress: '进行中',
     submitted: '待审核',
     not_started: '未开始',
     rejected: '已驳回',
@@ -136,7 +152,6 @@ function getMilestoneLabel(status: string) {
 function getMilestoneType(status: string): 'primary' | 'success' | 'warning' | 'danger' | 'default' {
   const map: Record<string, 'primary' | 'success' | 'warning' | 'danger' | 'default'> = {
     approved: 'success',
-    in_progress: 'primary',
     submitted: 'warning',
     not_started: 'default',
     rejected: 'danger',
@@ -150,6 +165,12 @@ function getMilestoneType(status: string): 'primary' | 'success' | 'warning' | '
   min-height: 100vh;
   background: var(--bg-primary);
   padding-bottom: 40px;
+}
+
+.loading-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 80px 0;
 }
 
 .task-card {
@@ -272,6 +293,7 @@ function getMilestoneType(status: string): 'primary' | 'success' | 'warning' | '
 .dot-current { background: var(--primary); box-shadow: 0 0 0 3px var(--primary-alpha); }
 .dot-submitted { background: var(--warning); }
 .dot-pending { background: var(--border); }
+.dot-rejected { background: var(--danger); }
 
 .milestone-line {
   width: 2px;
@@ -320,5 +342,19 @@ function getMilestoneType(status: string): 'primary' | 'success' | 'warning' | '
   display: flex;
   align-items: center;
   gap: 4px;
+}
+
+.reward-tag {
+  color: var(--warning);
+  font-weight: 600;
+}
+
+.review-feedback {
+  font-size: var(--font-size-xs);
+  color: var(--danger);
+  background: rgba(255, 118, 118, 0.08);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--spacing-sm);
 }
 </style>

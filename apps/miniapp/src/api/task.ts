@@ -83,7 +83,14 @@ function mapOrder(raw: any): TaskOrder {
     userAvatar: raw?.userAvatar || '',
     status: raw?.status || 'in_progress',
     progress: Number(raw?.progress ?? 0),
-    milestones: Array.isArray(raw?.milestones) ? raw.milestones : [],
+    milestones: Array.isArray(raw?.milestones)
+      ? raw.milestones.map((m: any) => ({
+          ...m,
+          id: String(m?.id ?? ''),
+          status: String(m?.status ?? '').toLowerCase(),
+          reward: Number(m?.reward ?? 0),
+        }))
+      : [],
     createdAt: raw?.createdAt || '',
   }
 }
@@ -98,7 +105,7 @@ export async function getTaskCategories(): Promise<TaskCategory[]> {
       id: String(c?.id ?? c?.name ?? ''),
       name: c?.name || '',
       icon: c?.icon || 'apps',
-      count: Number(c?.count ?? 0),
+      count: Number(c?.taskCount ?? c?.count ?? 0),
     }))
   } catch {
     return [{ id: 'all', name: '全部', icon: 'apps', count: 0 }]
@@ -158,6 +165,14 @@ export async function submitMilestone(
   milestoneId: string,
   payload: MilestoneSubmitPayload
 ): Promise<boolean> {
-  await http.post<any>(`/task/milestones/${milestoneId}/submit`, payload)
+  // 后端要 attachments: string[](URL 列表);小程序上传后是 {url,name}[] 对象,这里展平
+  const attachments = Array.isArray(payload.attachments)
+    ? payload.attachments.map((a: any) => (typeof a === 'string' ? a : a?.url)).filter(Boolean)
+    : []
+  await http.post<any>(`/task/milestones/${milestoneId}/submit`, {
+    githubUrl: payload.githubUrl || '',
+    description: payload.description || '',
+    attachments,
+  })
   return true
 }

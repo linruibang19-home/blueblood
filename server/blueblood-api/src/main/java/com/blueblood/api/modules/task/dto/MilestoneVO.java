@@ -4,8 +4,10 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Schema(description = "里程碑（含提交/审核摘要）")
@@ -23,6 +25,9 @@ public class MilestoneVO {
     /** NOT_STARTED/IN_PROGRESS/SUBMITTED/APPROVED/REJECTED/OVERDUE */
     private String status;
 
+    /** 里程碑酬金 */
+    private BigDecimal reward;
+
     private SubmissionSummary submission;
     private ReviewSummary review;
 
@@ -32,6 +37,7 @@ public class MilestoneVO {
         private Long id;
         private String githubUrl;
         private String description;
+        private List<String> attachments;
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         private LocalDateTime submittedAt;
     }

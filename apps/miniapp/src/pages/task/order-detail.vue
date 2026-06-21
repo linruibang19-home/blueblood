@@ -52,16 +52,23 @@ async function load() {
 }
 
 function statusText(s: string) {
-  return ({ in_progress: '进行中', submitted: '待审核', completed: '已完成', rejected: '已驳回' } as any)[s] || s
+  return ({
+    applied: '已报名', accepted: '已接单', in_progress: '进行中',
+    wait_acceptance: '待验收', passed: '验收通过', rejected: '已驳回',
+    settling: '结算中', settled: '已结算',
+  } as any)[s] || s
 }
 function statusClass(s: string) {
-  if (s === 'completed') return 'ok'
+  if (s === 'completed' || s === 'settled' || s === 'passed') return 'ok'
   if (s === 'rejected') return 'err'
-  if (s === 'submitted') return 'warn'
+  if (s === 'submitted' || s === 'wait_acceptance' || s === 'settling') return 'warn'
   return ''
 }
 function msText(s: any) {
-  return ({ pending: '待提交', submitted: '待审核', approved: '已通过', rejected: '已驳回' } as any)[s] || s || '待提交'
+  return ({
+    not_started: '待提交', pending: '待提交', in_progress: '进行中',
+    submitted: '待审核', approved: '已通过', rejected: '已驳回',
+  } as any)[s] || s || '待提交'
 }
 function msClass(s: any) {
   if (s === 'approved') return 'ok'
@@ -70,7 +77,7 @@ function msClass(s: any) {
   return ''
 }
 function canSubmit(s: any) {
-  return !s || s === 'pending' || s === 'rejected'
+  return !s || s === 'not_started' || s === 'pending' || s === 'rejected'
 }
 function goSubmit(mid: string) {
   uni.navigateTo({ url: `/pages/task/milestone-submit?orderId=${orderId.value}&milestoneId=${mid}` })

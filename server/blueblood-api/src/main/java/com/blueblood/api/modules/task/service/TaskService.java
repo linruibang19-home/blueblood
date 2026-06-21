@@ -153,9 +153,6 @@ public class TaskService {
         if (!HALL_STATUSES.contains(t.getStatus())) {
             throw new BusinessException(ResultCode.OPERATION_FAILED, "任务暂不可接单");
         }
-        if (t.getSlotsLeft() == null || t.getSlotsLeft() <= 0) {
-            throw new BusinessException(ResultCode.OPERATION_FAILED, "名额已满");
-        }
         Long userId = SecurityUtils.currentUserId();
         if (hasOrder(taskId, userId)) {
             throw new BusinessException(ResultCode.DATA_DUPLICATED, "你已接取该任务");
@@ -167,32 +164,67 @@ public class TaskService {
                     "等级不足，需 LV" + t.getLevelRequired());
         }
 
-        // 创建订单
+        // 创建订单(uk_order_pair 兜底并发重复接单)
         TaskOrder order = new TaskOrder();
         order.setTaskId(taskId);
         order.setUserId(userId);
         order.setProgress(0);
         order.setStatus("in_progress");
-        orderMapper.insert(order);
+        try {
+            orderMapper.insert(order);
+        } catch (org.springframework.dao.DuplicateKeyException e) {
+            throw new BusinessException(ResultCode.DATA_DUPLICATED, "你已接取该任务");
+        }
 
-        // 创建默认里程碑（任务交付，订单维度）
+        // 复制任务级里程碑模板(order_id IS NULL)为订单实例;无模板则兜底默认单里程碑
+        List<TaskMilestone> templates = milestoneMapper.selectList(new LambdaQueryWrapper<TaskMilestone>()
+                .eq(TaskMilestone::getTaskId, taskId)
+                .isNull(TaskMilestone::getOrderId)
+                .isNull(TaskMilestone::getDeletedAt)
+                .orderByAsc(TaskMilestone::getMilestoneOrder));
+        if (templates.isEmpty()) {
+            templates = List.of(defaultMilestone(taskId, t));
+        }
+        int seq = 0;
+        for (TaskMilestone tpl : templates) {
+            seq++;
+            TaskMilestone inst = new TaskMilestone();
+            inst.setOrderId(order.getId());
+            inst.setTaskId(taskId);
+            inst.setTitle(tpl.getTitle());
+            inst.setDescription(tpl.getDescription());
+            inst.setDueDate(tpl.getDueDate());
+            inst.setMilestoneOrder(seq);
+            inst.setReward(tpl.getReward());
+            inst.setStatus("NOT_STARTED");
+            milestoneMapper.insert(inst);
+        }
+
+        // 原子扣名额(并发安全,防超卖);affected=0 说明名额已被并发抢完 → 抛异常回滚整个事务
+        if (taskMapper.decrementSlotsLeft(taskId) == 0) {
+            throw new BusinessException(ResultCode.OPERATION_FAILED, "名额已满");
+        }
+        // 名额归零则任务转入进行中
+        Task fresh = taskMapper.selectById(taskId);
+        if (fresh != null && fresh.getSlotsLeft() != null && fresh.getSlotsLeft() <= 0) {
+            Task patch = new Task();
+            patch.setId(taskId);
+            patch.setStatus("IN_PROGRESS");
+            taskMapper.updateById(patch);
+        }
+
+        return Map.of("orderId", order.getId());
+    }
+
+    /** 老数据/未走发布流的任务无里程碑模板时的兜底:单条"任务交付",reward=任务总酬金。 */
+    private TaskMilestone defaultMilestone(Long taskId, Task t) {
         TaskMilestone m = new TaskMilestone();
-        m.setOrderId(order.getId());
         m.setTaskId(taskId);
         m.setTitle("任务交付");
         m.setDescription("完成全部任务要求并提交成果");
         m.setMilestoneOrder(1);
-        m.setStatus("NOT_STARTED");
-        milestoneMapper.insert(m);
-
-        // 名额 -1，名额满则任务进入进行中
-        t.setSlotsLeft(t.getSlotsLeft() - 1);
-        if (t.getSlotsLeft() <= 0) {
-            t.setStatus("IN_PROGRESS");
-        }
-        taskMapper.updateById(t);
-
-        return Map.of("orderId", order.getId());
+        m.setReward(t.getReward());
+        return m;
     }
 
     // ============================== 我的任务 / 执行详情 ==============================
@@ -219,15 +251,26 @@ public class TaskService {
         if (order == null || order.getDeletedAt() != null) {
             throw new BusinessException(ResultCode.DATA_NOT_FOUND, "订单不存在");
         }
-        // 仅订单所有者或管理员可看（管理员由 @PreAuthorize 控制；这里校验所有者）
-        if (!order.getUserId().equals(SecurityUtils.currentUserId())) {
+        // 订单所有者 / 管理员 / 该任务雇主 均可查看(Q3 雇主需查看任务下订单以审核里程碑)
+        Long currentId = SecurityUtils.currentUserId();
+        boolean isOwner = order.getUserId().equals(currentId);
+        boolean isAdmin = "ADMIN".equals(SecurityUtils.currentLoginUser().getRole());
+        boolean isEmployer = false;
+        Task t = taskMapper.selectById(order.getTaskId());
+        if (t != null && t.getEmployerId() != null) {
+            isEmployer = t.getEmployerId().equals(currentId);
+        }
+        if (!isOwner && !isAdmin && !isEmployer) {
             throw new BusinessException(ResultCode.FORBIDDEN, "无权查看该订单");
         }
         return toOrderVO(order);
     }
 
     private TaskOrderVO toOrderVO(TaskOrder order) {
-        Task t = taskMapper.selectById(order.getTaskId());
+        Task t = taskMapper.selectOne(new LambdaQueryWrapper<Task>()
+                .eq(Task::getId, order.getTaskId())
+                .isNull(Task::getDeletedAt)
+                .last("LIMIT 1"));
         TaskOrderVO vo = new TaskOrderVO();
         vo.setId(order.getId());
         vo.setTaskId(order.getTaskId());

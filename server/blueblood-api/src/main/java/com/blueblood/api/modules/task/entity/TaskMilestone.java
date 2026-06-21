@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 /**
@@ -28,6 +29,9 @@ public class TaskMilestone extends BaseEntity {
     private LocalDate dueDate;
 
     private Integer milestoneOrder;
+
+    /** 里程碑酬金(分阶段结算:APPROVED 即按此金额入账接单者钱包) */
+    private BigDecimal reward;
 
     /** NOT_STARTED/IN_PROGRESS/SUBMITTED/APPROVED/REJECTED/OVERDUE */
     private String status;

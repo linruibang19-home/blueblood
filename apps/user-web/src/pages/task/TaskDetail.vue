@@ -66,8 +66,19 @@
       </div>
 
       <!-- 底部接单按钮 -->
-      <div class="bottom-bar" v-if="task.status === 'recruiting'">
+      <div class="bottom-bar" v-if="['approved', 'recruiting', 'in_progress'].includes(task.status)">
         <van-button
+          v-if="task.accepted"
+          type="success"
+          size="large"
+          round
+          block
+          @click="goExecute"
+        >
+          已接单 · 去做任务
+        </van-button>
+        <van-button
+          v-else
           type="primary"
           size="large"
           round
@@ -89,6 +100,9 @@
         @confirm="handleConfirmAccept"
         @cancel="showConfirmSheet = false"
       />
+    </div>
+    <div v-else class="loading-wrap">
+      <van-loading type="spinner" />
     </div>
   </SubPageLayout>
 </template>
@@ -151,14 +165,18 @@ onMounted(async () => {
 async function handleConfirmAccept() {
   if (!task.value) return
   showConfirmSheet.value = false
-  const success = await acceptTask(task.value.id)
-  if (success) {
-    task.value.slotsLeft -= 1
+  // 接单后用后端返回的真实订单 id 跳转执行页(不再本地扣 slotsLeft / 跳大厅)
+  const orderId = await acceptTask(task.value.id)
+  if (orderId) {
     showToast('接单成功')
-    router.push('/tasks')
+    router.replace(`/tasks/execution/${orderId}`)
   } else {
-    showToast('接单失败')
+    showToast('接单失败,可能名额已满或等级不足')
   }
+}
+
+function goExecute() {
+  router.push('/tasks')
 }
 </script>
 
@@ -317,5 +335,11 @@ async function handleConfirmAccept() {
   border-top: 1px solid var(--border);
   max-width: var(--max-width);
   margin: 0 auto;
+}
+
+.loading-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 80px 0;
 }
 </style>

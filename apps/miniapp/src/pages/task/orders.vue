@@ -54,16 +54,20 @@ async function load() {
 
 function statusText(s: string) {
   const map: Record<string, string> = {
+    applied: '已报名',
+    accepted: '已接单',
     in_progress: '进行中',
-    submitted: '待审核',
-    completed: '已完成',
+    wait_acceptance: '待验收',
+    passed: '验收通过',
     rejected: '已驳回',
+    settling: '结算中',
+    settled: '已结算',
   }
   return map[s] || s || '进行中'
 }
 function statusClass(s: string) {
-  if (s === 'completed') return 'ok'
-  if (s === 'submitted') return 'warn'
+  if (s === 'completed' || s === 'settled' || s === 'passed') return 'ok'
+  if (s === 'submitted' || s === 'wait_acceptance' || s === 'settling') return 'warn'
   if (s === 'rejected') return 'err'
   return ''
 }

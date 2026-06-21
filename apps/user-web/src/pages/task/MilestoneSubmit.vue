@@ -4,6 +4,7 @@
       <!-- 里程碑信息 -->
       <div class="milestone-info">
         <h3 class="milestone-title">{{ milestone?.title }}</h3>
+        <div class="milestone-reward" v-if="milestone?.reward">里程碑酬金 ¥{{ milestone.reward }}</div>
         <p class="milestone-desc">{{ milestone?.description }}</p>
         <div class="milestone-deadline">
           <van-icon name="clock-o" />
@@ -36,7 +37,12 @@
       <!-- 附件上传 -->
       <div class="form-section">
         <h3 class="section-title">附件上传</h3>
-        <UploadBox placeholder="点击上传相关附件（可选）" />
+        <van-uploader
+          v-model="fileList"
+          :max-count="5"
+          :after-read="onAfterRead"
+          accept="image/*"
+        />
       </div>
 
       <!-- 提交按钮 -->
@@ -60,10 +66,10 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { showToast } from 'vant'
+import { showToast, type UploaderFileListItem } from 'vant'
 import SubPageLayout from '@/layouts/SubPageLayout.vue'
-import UploadBox from '@/components/UploadBox.vue'
 import { getMyTaskOrderDetail, submitMilestone } from '@/api/task'
+import { uploadFile } from '@/api/auth'
 import type { Milestone } from '@/types/task'
 
 const route = useRoute()
@@ -71,6 +77,8 @@ const router = useRouter()
 const milestone = ref<Milestone | null>(null)
 const githubUrl = ref('')
 const description = ref('')
+const fileList = ref<UploaderFileListItem[]>([])
+const attachments = ref<string[]>([])
 const submitting = ref(false)
 
 onMounted(async () => {
@@ -78,6 +86,24 @@ onMounted(async () => {
   const order = await getMyTaskOrderDetail(orderId)
   milestone.value = order?.milestones?.find(m => m.id === route.params.milestoneId) || null
 })
+
+async function onAfterRead(item: UploaderFileListItem | UploaderFileListItem[]) {
+  const file = Array.isArray(item) ? item[0] : item
+  if (!file?.file) return
+  try {
+    file.status = 'uploading'
+    file.message = '上传中'
+    const url = await uploadFile(file.file, 'milestone')
+    if (!url) throw new Error('上传失败')
+    attachments.value.push(url)
+    file.status = 'done'
+    file.message = ''
+  } catch {
+    file.status = 'failed'
+    file.message = '上传失败'
+    showToast('附件上传失败')
+  }
+}
 
 async function handleSubmit() {
   if (!githubUrl.value.trim()) {
@@ -94,11 +120,12 @@ async function handleSubmit() {
     await submitMilestone(route.params.orderId as string, route.params.milestoneId as string, {
       githubUrl: githubUrl.value.trim(),
       description: description.value.trim(),
+      attachments: attachments.value,
     })
     showToast('提交成功')
     router.back()
-  } catch {
-    showToast('提交失败')
+  } catch (e) {
+    showToast((e as Error).message || '提交失败')
   } finally {
     submitting.value = false
   }
@@ -122,6 +149,13 @@ async function handleSubmit() {
   font-size: var(--font-size-lg);
   font-weight: 600;
   color: var(--text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.milestone-reward {
+  font-size: var(--font-size-md);
+  color: var(--warning);
+  font-weight: 600;
   margin-bottom: var(--spacing-sm);
 }
 

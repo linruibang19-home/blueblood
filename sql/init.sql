@@ -516,12 +516,13 @@ CREATE TABLE `task_order` (
 DROP TABLE IF EXISTS `task_milestone`;
 CREATE TABLE `task_milestone` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键ID',
-  `order_id` BIGINT UNSIGNED NOT NULL COMMENT '订单ID',
+  `order_id` BIGINT UNSIGNED DEFAULT NULL COMMENT '订单ID(NULL=任务级模板行;接单时复制为实例)',
   `task_id` BIGINT UNSIGNED NOT NULL COMMENT '任务ID',
   `title` VARCHAR(255) NOT NULL COMMENT '里程碑标题',
   `description` TEXT COMMENT '里程碑描述',
   `due_date` DATE DEFAULT NULL COMMENT '截止日期',
   `milestone_order` INT NOT NULL DEFAULT 0 COMMENT '里程碑顺序',
+  `reward` DECIMAL(10,2) NOT NULL DEFAULT 0.00 COMMENT '里程碑酬金(分阶段结算:APPROVED 即按此金额入账)',
   `status` VARCHAR(20) NOT NULL DEFAULT 'NOT_STARTED' COMMENT '状态: NOT_STARTED-未开始 IN_PROGRESS-进行中 SUBMITTED-已提交 APPROVED-已通过 REJECTED-已驳回 OVERDUE-已逾期',
   `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
@@ -529,7 +530,8 @@ CREATE TABLE `task_milestone` (
   PRIMARY KEY (`id`),
   KEY `idx_milestone_order` (`order_id`),
   KEY `idx_milestone_task` (`task_id`),
-  KEY `idx_milestone_status` (`status`)
+  KEY `idx_milestone_status` (`status`),
+  KEY `idx_milestone_template` (`task_id`, `order_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='任务里程碑表';
 
 -- 表说明：里程碑提交记录
@@ -608,7 +610,8 @@ CREATE TABLE `wallet_record` (
   `deleted_at` DATETIME DEFAULT NULL COMMENT '删除时间(软删)',
   PRIMARY KEY (`id`),
   KEY `idx_wallet_rec_user` (`user_id`),
-  KEY `idx_wallet_rec_type` (`type`)
+  KEY `idx_wallet_rec_type` (`type`),
+  KEY `idx_wallet_rec_biz` (`biz_type`, `biz_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='钱包流水表';
 
 -- 表说明：提现记录

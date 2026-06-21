@@ -160,6 +160,60 @@ public class WalletService {
         return withdraw.getId();
     }
 
+    // ============================== 任务结算入账 ==============================
+
+    /**
+     * 业务入账:把金额加到指定用户钱包,写 income 流水(status=available 即可用)。
+     * 用于任务里程碑分阶段结算(Q4):每个里程碑 APPROVED 即按其 reward 入账接单者。
+     * 幂等:同一 (bizType, bizId) 已存在 income 记录则跳过返回 null,防止重复入账。
+     *
+     * @param userId  接单者用户ID(订单 userId,非 currentUserId)
+     * @param amount  入账金额(>0)
+     * @param bizType 业务类型("task")
+     * @param bizId   关联业务ID(里程碑 id)
+     * @param remark  流水标题
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public Long credit(Long userId, BigDecimal amount, String bizType, Long bizId, String remark) {
+        if (userId == null || amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new BusinessException(ResultCode.OPERATION_FAILED, "入账参数非法");
+        }
+
+        // 幂等:同一 (bizType, bizId) 的 income 已存在则跳过
+        Long existCount = walletRecordMapper.selectCount(new LambdaQueryWrapper<WalletRecord>()
+                .eq(WalletRecord::getBizType, bizType)
+                .eq(WalletRecord::getBizId, bizId)
+                .eq(WalletRecord::getType, "income")
+                .isNull(WalletRecord::getDeletedAt));
+        if (existCount != null && existCount > 0) {
+            log.info("credit 幂等跳过: bizType={}, bizId={}", bizType, bizId);
+            return null;
+        }
+
+        WalletAccount account = getOrCreateAccount(userId);
+        if ("FROZEN".equalsIgnoreCase(account.getStatus())) {
+            throw new BusinessException(ResultCode.OPERATION_FAILED, "账户已被冻结,无法入账");
+        }
+        BigDecimal newBalance = (account.getBalance() == null ? BigDecimal.ZERO : account.getBalance()).add(amount);
+        BigDecimal newEarned = (account.getTotalEarned() == null ? BigDecimal.ZERO : account.getTotalEarned()).add(amount);
+        account.setBalance(newBalance);
+        account.setTotalEarned(newEarned);
+        walletAccountMapper.updateById(account);
+
+        WalletRecord record = new WalletRecord();
+        record.setUserId(userId);
+        record.setType("income");
+        record.setAmount(amount);
+        record.setStatus("available");
+        record.setTitle(remark == null ? "任务结算收入" : remark);
+        record.setDescription(bizType + ":" + bizId);
+        record.setBizType(bizType);
+        record.setBizId(bizId);
+        walletRecordMapper.insert(record);
+
+        return record.getId();
+    }
+
     // ============================== 内部 ==============================
 
     /**

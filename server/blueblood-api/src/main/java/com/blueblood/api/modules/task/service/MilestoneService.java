@@ -8,12 +8,15 @@ import com.blueblood.api.modules.task.dto.ReviewMilestoneRequest;
 import com.blueblood.api.modules.task.dto.SubmitMilestoneRequest;
 import com.blueblood.api.modules.task.entity.MilestoneReview;
 import com.blueblood.api.modules.task.entity.MilestoneSubmission;
+import com.blueblood.api.modules.task.entity.Task;
 import com.blueblood.api.modules.task.entity.TaskMilestone;
 import com.blueblood.api.modules.task.entity.TaskOrder;
 import com.blueblood.api.modules.task.mapper.MilestoneReviewMapper;
 import com.blueblood.api.modules.task.mapper.MilestoneSubmissionMapper;
+import com.blueblood.api.modules.task.mapper.TaskMapper;
 import com.blueblood.api.modules.task.mapper.TaskMilestoneMapper;
 import com.blueblood.api.modules.task.mapper.TaskOrderMapper;
+import com.blueblood.api.modules.wallet.service.WalletService;
 import com.blueblood.api.security.SecurityUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -23,12 +26,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
 /**
- * 里程碑服务：提交、查看审核结果、管理员审核；进度重算。
+ * 里程碑服务：提交、查看审核结果、雇主/管理员审核；进度重算与分阶段结算。
  */
 @Slf4j
 @Service
@@ -39,6 +43,8 @@ public class MilestoneService {
     private final MilestoneSubmissionMapper submissionMapper;
     private final MilestoneReviewMapper reviewMapper;
     private final TaskOrderMapper orderMapper;
+    private final TaskMapper taskMapper;
+    private final WalletService walletService;
     private final ObjectMapper objectMapper;
 
     private static final TypeReference<List<String>> LIST_TYPE = new TypeReference<>() {};
@@ -107,8 +113,28 @@ public class MilestoneService {
         if (!"SUBMITTED".equalsIgnoreCase(m.getStatus())) {
             throw new BusinessException(ResultCode.OPERATION_FAILED, "该里程碑不在待审核状态");
         }
-        Long reviewerId = SecurityUtils.currentUserId();
+        // service 层状态白名单(不依赖 DTO @Pattern,防御复用入口)
         String result = req.getResult().toUpperCase();
+        if (!"APPROVED".equals(result) && !"REJECTED".equals(result)) {
+            throw new BusinessException(ResultCode.BAD_REQUEST, "审核结果只能为 APPROVED 或 REJECTED");
+        }
+
+        Long reviewerId = SecurityUtils.currentUserId();
+        // 权限:任务雇主(发布者)或管理员可审核(Q3 雇主自助验收)
+        TaskOrder order = orderMapper.selectById(m.getOrderId());
+        if (order == null || order.getDeletedAt() != null) {
+            throw new BusinessException(ResultCode.DATA_NOT_FOUND, "订单不存在");
+        }
+        Task task = taskMapper.selectOne(new LambdaQueryWrapper<Task>()
+                .eq(Task::getId, m.getTaskId())
+                .isNull(Task::getDeletedAt)
+                .last("LIMIT 1"));
+        boolean isEmployer = task != null && task.getEmployerId() != null
+                && task.getEmployerId().equals(reviewerId);
+        boolean isAdmin = "ADMIN".equals(SecurityUtils.currentLoginUser().getRole());
+        if (!isEmployer && !isAdmin) {
+            throw new BusinessException(ResultCode.FORBIDDEN, "仅任务雇主或管理员可审核");
+        }
 
         MilestoneReview review = reviewMapper.selectOne(new LambdaQueryWrapper<MilestoneReview>()
                 .eq(MilestoneReview::getMilestoneId, milestoneId)
@@ -134,7 +160,16 @@ public class MilestoneService {
         m.setStatus(result);
         milestoneMapper.updateById(m);
 
-        // 重算订单进度 + 是否全部通过
+        // 分阶段结算(Q4):APPROVED 即按里程碑 reward 入账接单者钱包(幂等)
+        if ("APPROVED".equals(result)) {
+            BigDecimal reward = m.getReward() == null ? BigDecimal.ZERO : m.getReward();
+            if (reward.compareTo(BigDecimal.ZERO) > 0) {
+                walletService.credit(order.getUserId(), reward, "task", m.getId(),
+                        "里程碑结算: " + m.getTitle());
+            }
+        }
+
+        // 重算订单进度(全部有效里程碑 APPROVED → 订单 settled)
         recomputeOrderProgress(m.getOrderId());
 
         return Map.of("reviewId", review.getId());
@@ -142,7 +177,7 @@ public class MilestoneService {
 
     // ============================== 进度重算 ==============================
 
-    /** 重算订单整体进度；全部里程碑通过则订单进入待验收。 */
+    /** 重算订单整体进度；分阶段结算(Q4)下,所有有效里程碑 APPROVED → 订单 settled。 */
     public void recomputeOrderProgress(Long orderId) {
         List<TaskMilestone> all = milestoneMapper.selectList(new LambdaQueryWrapper<TaskMilestone>()
                 .eq(TaskMilestone::getOrderId, orderId)
@@ -150,14 +185,20 @@ public class MilestoneService {
         if (all.isEmpty()) {
             return;
         }
-        long approved = all.stream().filter(m -> "APPROVED".equalsIgnoreCase(m.getStatus())).count();
-        int progress = (int) Math.round(approved * 100.0 / all.size());
+        // 有效里程碑 = 非 REJECTED(REJECTED 不计入分母,否则被驳回的里程碑会卡死订单永远 <100%)
+        List<TaskMilestone> effective = all.stream()
+                .filter(m -> !"REJECTED".equalsIgnoreCase(m.getStatus()))
+                .toList();
+        long approved = effective.stream().filter(m -> "APPROVED".equalsIgnoreCase(m.getStatus())).count();
+        int progress = effective.isEmpty() ? 0
+                : (int) Math.round(approved * 100.0 / effective.size());
 
         TaskOrder patch = new TaskOrder();
         patch.setId(orderId);
         patch.setProgress(progress);
-        if (approved == all.size()) {
-            patch.setStatus("wait_acceptance");
+        // 所有有效里程碑均已通过(且已分阶段入账)→ 订单结算完成
+        if (!effective.isEmpty() && approved == effective.size()) {
+            patch.setStatus("settled");
         }
         orderMapper.updateById(patch);
     }
@@ -184,6 +225,7 @@ public class MilestoneService {
             ss.setId(sub.getId());
             ss.setGithubUrl(sub.getGithubUrl());
             ss.setDescription(sub.getDescription());
+            ss.setAttachments(fromJson(sub.getAttachments()));
             ss.setSubmittedAt(sub.getSubmittedAt());
             vo.setSubmission(ss);
         }

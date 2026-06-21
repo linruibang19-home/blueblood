@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -38,8 +37,7 @@ public class MilestoneController {
         return Result.success(milestoneService.result(milestoneId));
     }
 
-    @Operation(summary = "审核里程碑（管理员）")
-    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "审核里程碑（雇主/管理员）")
     @PostMapping("/{milestoneId}/review")
     public Result<Map<String, Long>> review(@PathVariable Long milestoneId,
                                             @Valid @RequestBody ReviewMilestoneRequest req) {

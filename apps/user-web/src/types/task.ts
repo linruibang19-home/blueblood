@@ -13,8 +13,10 @@ export interface Task {
   skills: string[]
   status: TaskStatus
   employerName: string
+  employerId?: string
   createdAt: string
   myOrderId?: string
+  accepted?: boolean
 }
 
 export type TaskStatus = 'draft' | 'pending_review' | 'approved' | 'recruiting' | 'in_progress' | 'completed' | 'closed'
@@ -42,7 +44,10 @@ export interface Milestone {
   dueDate: string
   status: MilestoneStatus
   order: number
+  reward?: number
+  milestoneOrder?: number
   submission?: MilestoneSubmission
+  review?: MilestoneReviewInfo
 }
 
 export type MilestoneStatus = 'not_started' | 'in_progress' | 'submitted' | 'approved' | 'rejected' | 'overdue'
@@ -54,8 +59,12 @@ export interface MilestoneSubmission {
   description: string
   attachments: string[]
   submittedAt: string
-  reviewedAt?: string
+}
+
+export interface MilestoneReviewInfo {
+  result: string
   feedback?: string
+  reviewedAt?: string
 }
 
 export interface TaskCategory {
@@ -63,4 +72,44 @@ export interface TaskCategory {
   name: string
   icon: string
   count: number
+}
+
+// ===== 用户端发布 / 雇主工作台 =====
+
+export interface MilestoneTemplate {
+  title: string
+  description?: string
+  dueDate?: string
+  milestoneOrder?: number
+  reward: number
+}
+
+export interface PublishTaskPayload {
+  title: string
+  categoryId?: number | string
+  description: string
+  reward: number
+  levelRequired?: number
+  totalSlots?: number
+  deadline?: string
+  skills?: string[]
+  milestones: MilestoneTemplate[]
+}
+
+export interface MilestoneReviewItem {
+  milestoneId: string
+  orderId: string
+  taskId: string
+  taskTitle: string
+  milestoneTitle: string
+  description: string
+  milestoneOrder: number
+  reward: number
+  status: string
+  workerId: string
+  workerName: string
+  githubUrl: string
+  submissionDesc: string
+  attachments: string
+  submittedAt: string
 }

@@ -6,9 +6,14 @@
         <van-tabs v-model:active="activeTab" sticky offset-top="0">
           <van-tab title="任务大厅" name="hall">
             <div class="tab-content">
+              <!-- 发布 / 我发布的 入口 -->
+              <div class="quick-actions">
+                <van-button size="small" type="primary" plain icon="edit" @click="router.push('/tasks/publish')">发布任务</van-button>
+                <van-button size="small" type="default" plain icon="manager-o" @click="router.push('/tasks/published')">我发布的</van-button>
+              </div>
               <!-- 搜索框 -->
               <div class="search-section">
-                <SearchBar placeholder="搜索任务..." @click="handleSearch" />
+                <van-search v-model="keyword" placeholder="搜索任务标题..." shape="round" @search="onSearch" />
               </div>
 
               <!-- 分类筛选 -->
@@ -27,48 +32,53 @@
 
               <!-- 任务列表 -->
               <div class="task-list">
-                <div
-                  v-for="task in filteredTasks"
-                  :key="task.id"
-                  class="task-card"
-                  @click="goTaskDetail(task.id)"
-                >
-                  <div class="task-header">
-                    <van-tag :type="getCategoryColor(task.category)">{{ task.category }}</van-tag>
-                    <span class="task-reward">¥{{ task.reward.toLocaleString() }}</span>
-                  </div>
-                  <h4 class="task-title">{{ task.title }}</h4>
-                  <p class="task-desc text-ellipsis-2">{{ task.description }}</p>
-                  <div class="task-tags">
-                    <van-tag v-for="skill in task.skills.slice(0, 3)" :key="skill" type="primary">{{ skill }}</van-tag>
-                  </div>
-                  <div class="task-footer">
-                    <div class="task-meta">
-                      <span class="meta-item">
-                        <van-icon name="user-o" /> {{ task.employerName }}
-                      </span>
-                      <span class="meta-item">
-                        <van-icon name="clock-o" /> {{ task.deadline }}
-                      </span>
+                <van-loading v-if="loading" type="spinner" class="page-loading" />
+                <template v-else>
+                  <div
+                    v-for="task in tasks"
+                    :key="task.id"
+                    class="task-card"
+                    @click="goTaskDetail(task.id)"
+                  >
+                    <div class="task-header">
+                      <van-tag :type="getCategoryColor(task.category)">{{ task.category }}</van-tag>
+                      <span class="task-reward">¥{{ task.reward.toLocaleString() }}</span>
                     </div>
-                    <div class="task-slots">
-                      <span class="slots-num">{{ task.slotsLeft }}</span>/{{ task.totalSlots }}名额
+                    <h4 class="task-title">{{ task.title }}</h4>
+                    <p class="task-desc text-ellipsis-2">{{ task.description }}</p>
+                    <div class="task-tags">
+                      <van-tag v-for="skill in task.skills.slice(0, 3)" :key="skill" type="primary">{{ skill }}</van-tag>
+                    </div>
+                    <div class="task-footer">
+                      <div class="task-meta">
+                        <span class="meta-item">
+                          <van-icon name="user-o" /> {{ task.employerName }}
+                        </span>
+                        <span class="meta-item">
+                          <van-icon name="clock-o" /> {{ task.deadline }}
+                        </span>
+                      </div>
+                      <div class="task-slots">
+                        <span class="slots-num">{{ task.slotsLeft }}</span>/{{ task.totalSlots }}名额
+                      </div>
+                    </div>
+                    <div class="task-level-bar">
+                      <span>LV{{ task.levelRequired }}可接</span>
+                      <div class="level-bar">
+                        <div class="level-fill" :style="{ width: '30%' }" />
+                      </div>
                     </div>
                   </div>
-                  <div class="task-level-bar">
-                    <span>LV{{ task.levelRequired }}可接</span>
-                    <div class="level-bar">
-                      <div class="level-fill" :style="{ width: '30%' }" />
-                    </div>
-                  </div>
-                </div>
+                  <van-empty v-if="!tasks.length" description="暂无任务" />
+                </template>
               </div>
             </div>
           </van-tab>
 
           <van-tab title="我的任务" name="my">
             <div class="tab-content">
-              <div v-if="myTaskOrders.length" class="my-task-list">
+              <van-loading v-if="loadingOrders" type="spinner" class="page-loading" />
+              <div v-else-if="myTaskOrders.length" class="my-task-list">
                 <div
                   v-for="order in myTaskOrders"
                   :key="order.id"
@@ -115,14 +125,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, onMounted, onActivated } from 'vue'
 import { useRouter } from 'vue-router'
 import MobileTabLayout from '@/layouts/MobileTabLayout.vue'
-import SearchBar from '@/components/SearchBar.vue'
 import StatusBadge from '@/components/StatusBadge.vue'
 import { getTaskList, getTaskCategories, getMyTaskOrders } from '@/api/task'
-import type { Task, TaskCategory } from '@/types/task'
-import type { TaskOrder } from '@/types/task'
+import type { Task, TaskCategory, TaskOrder } from '@/types/task'
 
 const router = useRouter()
 const activeTab = ref('hall')
@@ -130,20 +138,55 @@ const tasks = ref<Task[]>([])
 const categories = ref<TaskCategory[]>([])
 const selectedCategory = ref('全部')
 const myTaskOrders = ref<TaskOrder[]>([])
+const keyword = ref('')
+const loading = ref(false)
+const loadingOrders = ref(false)
 
-const filteredTasks = computed(() => {
-  if (selectedCategory.value === '全部') return tasks.value
-  return tasks.value.filter(t => t.category === selectedCategory.value)
-})
+async function fetchTasks() {
+  loading.value = true
+  try {
+    tasks.value = await getTaskList({
+      category: selectedCategory.value === '全部' ? undefined : selectedCategory.value,
+      keyword: keyword.value.trim() || undefined,
+    })
+  } catch {
+    tasks.value = []
+  } finally {
+    loading.value = false
+  }
+}
+
+async function fetchOrders() {
+  loadingOrders.value = true
+  try {
+    myTaskOrders.value = await getMyTaskOrders()
+  } catch {
+    myTaskOrders.value = []
+  } finally {
+    loadingOrders.value = false
+  }
+}
 
 onMounted(async () => {
-  tasks.value = await getTaskList({})
-  categories.value = await getTaskCategories()
-  myTaskOrders.value = await getMyTaskOrders()
+  await Promise.all([
+    fetchTasks(),
+    (async () => { categories.value = await getTaskCategories() })(),
+    fetchOrders(),
+  ])
+})
+
+// 提交里程碑返回后刷新我的任务列表
+onActivated(() => {
+  fetchOrders()
 })
 
 function selectCategory(name: string) {
   selectedCategory.value = name
+  fetchTasks()
+}
+
+function onSearch() {
+  fetchTasks()
 }
 
 function goTaskDetail(id: string) {
@@ -152,10 +195,6 @@ function goTaskDetail(id: string) {
 
 function goTaskExecution(id: string) {
   router.push(`/tasks/execution/${id}`)
-}
-
-function handleSearch() {
-  // 搜索功能后续实现
 }
 
 function getCategoryColor(category: string) {
@@ -218,8 +257,20 @@ function getMilestoneStatusClass(status: string) {
   padding: var(--spacing-lg);
 }
 
+.quick-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+}
+
 .search-section {
   margin-bottom: var(--spacing-md);
+}
+
+.page-loading {
+  display: flex;
+  justify-content: center;
+  padding: 40px 0;
 }
 
 .category-filter {
