@@ -12,6 +12,7 @@ import com.blueblood.api.modules.task.dto.TaskCategoryVO;
 import com.blueblood.api.modules.task.entity.*;
 import com.blueblood.api.modules.task.mapper.*;
 import com.blueblood.api.modules.task.service.MilestoneService;
+import com.blueblood.api.modules.task.service.TaskStockService;
 import com.blueblood.api.modules.user.entity.User;
 import com.blueblood.api.modules.user.mapper.UserMapper;
 import com.blueblood.api.security.SecurityUtils;
@@ -39,6 +40,7 @@ public class AdminTaskService {
     private final MilestoneSubmissionMapper submissionMapper;
     private final UserMapper userMapper;
     private final MilestoneService milestoneService;
+    private final TaskStockService taskStockService;
 
     private static final Set<String> TASK_STATUS = Set.of(
             "DRAFT", "PENDING_REVIEW", "APPROVED", "RECRUITING",
@@ -91,6 +93,8 @@ public class AdminTaskService {
         // 分类名称冗余回填
         resolveCategoryName(t);
         taskMapper.insert(t);
+        // 初始化 Redis 名额库存(秒杀预扣用)
+        taskStockService.initStock(t.getId(), t.getTotalSlots() == null ? 0 : t.getTotalSlots());
         return t.getId();
     }
 

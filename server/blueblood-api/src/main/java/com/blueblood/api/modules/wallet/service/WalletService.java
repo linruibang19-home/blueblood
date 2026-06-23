@@ -125,16 +125,10 @@ public class WalletService {
             throw new BusinessException(ResultCode.OPERATION_FAILED, "账户已被冻结，无法提现");
         }
 
-        // 余额校验
-        BigDecimal balance = account.getBalance() == null ? BigDecimal.ZERO : account.getBalance();
-        if (balance.compareTo(amount) < 0) {
+        // 原子扣余额(WHERE balance>=amount),影响行数=0 表示余额不足。防并发丢失更新
+        if (walletAccountMapper.deductBalance(userId, amount) == 0) {
             throw new BusinessException(ResultCode.OPERATION_FAILED, "余额不足");
         }
-
-        // 1. 扣减余额（冻结）
-        BigDecimal newBalance = balance.subtract(amount);
-        account.setBalance(newBalance);
-        walletAccountMapper.updateById(account);
 
         // 2. 创建提现记录
         WithdrawRecord withdraw = new WithdrawRecord();
@@ -194,11 +188,8 @@ public class WalletService {
         if ("FROZEN".equalsIgnoreCase(account.getStatus())) {
             throw new BusinessException(ResultCode.OPERATION_FAILED, "账户已被冻结,无法入账");
         }
-        BigDecimal newBalance = (account.getBalance() == null ? BigDecimal.ZERO : account.getBalance()).add(amount);
-        BigDecimal newEarned = (account.getTotalEarned() == null ? BigDecimal.ZERO : account.getTotalEarned()).add(amount);
-        account.setBalance(newBalance);
-        account.setTotalEarned(newEarned);
-        walletAccountMapper.updateById(account);
+        // 原子加余额(DB 行锁,防并发丢失更新),替代 read-modify-write
+        walletAccountMapper.addBalance(userId, amount);
 
         WalletRecord record = new WalletRecord();
         record.setUserId(userId);
@@ -235,7 +226,15 @@ public class WalletService {
             account.setWithdrawnAmount(BigDecimal.ZERO);
             account.setTotalEarned(BigDecimal.ZERO);
             account.setStatus("ACTIVE");
-            walletAccountMapper.insert(account);
+            try {
+                walletAccountMapper.insert(account);
+            } catch (org.springframework.dao.DuplicateKeyException e) {
+                // 并发首次建账,另一线程已插入(uk_wallet_user 兜底),重新查
+                account = walletAccountMapper.selectOne(new LambdaQueryWrapper<WalletAccount>()
+                        .eq(WalletAccount::getUserId, userId)
+                        .isNull(WalletAccount::getDeletedAt)
+                        .last("LIMIT 1"));
+            }
         }
         return account;
     }

@@ -47,6 +47,8 @@ public class TaskService {
     private final TaskMilestoneMapper milestoneMapper;
     private final UserMapper userMapper;
     private final MilestoneService milestoneService;
+    private final TaskStockService taskStockService;
+    private final TaskListCacheService taskListCacheService;
 
     /** 任务大厅默认可见状态 */
     private static final List<String> HALL_STATUSES = Arrays.asList("APPROVED", "RECRUITING", "IN_PROGRESS");
@@ -75,11 +77,46 @@ public class TaskService {
                                                 Integer page, Integer pageSize) {
         int p = page == null || page < 1 ? 1 : page;
         int size = pageSize == null || pageSize < 1 ? 10 : Math.min(pageSize, 100);
+        String cacheKey = (status == null ? "hall" : status) + ":" + (category == null ? "all" : category)
+                + ":" + (keyword == null ? "" : keyword) + ":" + p + ":" + size;
 
+        // 1. 查缓存(命中含空值缓存 → 直接返回,防穿透)
+        PageResult<TaskListItemVO> cached = taskListCacheService.get(cacheKey);
+        if (cached != null) {
+            return cached;
+        }
+        // 2. 互斥锁防击穿:热点 key 过期时只让一个线程重建,其余短暂等待后读缓存
+        boolean locked = taskListCacheService.tryLock(cacheKey);
+        if (!locked) {
+            sleepQuiet(60);
+            cached = taskListCacheService.get(cacheKey);
+            if (cached != null) {
+                return cached;
+            }
+        }
+        try {
+            // 双重检查:等待期间可能已被其他线程写入
+            cached = taskListCacheService.get(cacheKey);
+            if (cached != null) {
+                return cached;
+            }
+            // 3. 查 DB
+            PageResult<TaskListItemVO> pr = queryTasksFromDb(category, keyword, status, p, size);
+            // 4. 回写(空值短 TTL 防穿透,正常随机 TTL 防雪崩)
+            taskListCacheService.set(cacheKey, pr, pr.getList() == null || pr.getList().isEmpty());
+            return pr;
+        } finally {
+            if (locked) {
+                taskListCacheService.unlock(cacheKey);
+            }
+        }
+    }
+
+    /** 实际查 DB(缓存 miss 时调用)。 */
+    private PageResult<TaskListItemVO> queryTasksFromDb(String category, String keyword, String status, int p, int size) {
         LambdaQueryWrapper<Task> wrapper = new LambdaQueryWrapper<Task>()
                 .isNull(Task::getDeletedAt)
                 .orderByDesc(Task::getCreatedAt);
-
         if (StringUtils.hasText(status)) {
             wrapper.eq(Task::getStatus, status);
         } else {
@@ -91,9 +128,16 @@ public class TaskService {
         if (StringUtils.hasText(keyword)) {
             wrapper.like(Task::getTitle, keyword);
         }
-
         Page<Task> result = taskMapper.selectPage(new Page<>(p, size), wrapper);
         return PageResult.of(result.convert(this::toListItem));
+    }
+
+    private void sleepQuiet(long ms) {
+        try {
+            Thread.sleep(ms);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     private TaskListItemVO toListItem(Task t) {
@@ -117,12 +161,9 @@ public class TaskService {
 
     public TaskVO detail(Long id) {
         Task t = getTask(id);
-        // 浏览数 +1
-        Task patch = new Task();
-        patch.setId(id);
-        patch.setViewCount((t.getViewCount() == null ? 0 : t.getViewCount()) + 1);
-        taskMapper.updateById(patch);
-        t.setViewCount(patch.getViewCount());
+        // 浏览数原子 +1(防并发计数丢失更新)
+        taskMapper.incrementViewCount(id);
+        t.setViewCount((t.getViewCount() == null ? 0 : t.getViewCount()) + 1);
 
         TaskVO vo = new TaskVO();
         vo.setId(t.getId());
@@ -164,56 +205,65 @@ public class TaskService {
                     "等级不足，需 LV" + t.getLevelRequired());
         }
 
-        // 创建订单(uk_order_pair 兜底并发重复接单)
-        TaskOrder order = new TaskOrder();
-        order.setTaskId(taskId);
-        order.setUserId(userId);
-        order.setProgress(0);
-        order.setStatus("in_progress");
-        try {
-            orderMapper.insert(order);
-        } catch (org.springframework.dao.DuplicateKeyException e) {
-            throw new BusinessException(ResultCode.DATA_DUPLICATED, "你已接取该任务");
-        }
-
-        // 复制任务级里程碑模板(order_id IS NULL)为订单实例;无模板则兜底默认单里程碑
-        List<TaskMilestone> templates = milestoneMapper.selectList(new LambdaQueryWrapper<TaskMilestone>()
-                .eq(TaskMilestone::getTaskId, taskId)
-                .isNull(TaskMilestone::getOrderId)
-                .isNull(TaskMilestone::getDeletedAt)
-                .orderByAsc(TaskMilestone::getMilestoneOrder));
-        if (templates.isEmpty()) {
-            templates = List.of(defaultMilestone(taskId, t));
-        }
-        int seq = 0;
-        for (TaskMilestone tpl : templates) {
-            seq++;
-            TaskMilestone inst = new TaskMilestone();
-            inst.setOrderId(order.getId());
-            inst.setTaskId(taskId);
-            inst.setTitle(tpl.getTitle());
-            inst.setDescription(tpl.getDescription());
-            inst.setDueDate(tpl.getDueDate());
-            inst.setMilestoneOrder(seq);
-            inst.setReward(tpl.getReward());
-            inst.setStatus("NOT_STARTED");
-            milestoneMapper.insert(inst);
-        }
-
-        // 原子扣名额(并发安全,防超卖);affected=0 说明名额已被并发抢完 → 抛异常回滚整个事务
-        if (taskMapper.decrementSlotsLeft(taskId) == 0) {
+        // Redis 预扣名额(Lua 原子,内存层挡瞬时高并发,隔离 DB;与 DB 最终一致)
+        if (!taskStockService.tryDeduct(taskId)) {
             throw new BusinessException(ResultCode.OPERATION_FAILED, "名额已满");
         }
-        // 名额归零则任务转入进行中
-        Task fresh = taskMapper.selectById(taskId);
-        if (fresh != null && fresh.getSlotsLeft() != null && fresh.getSlotsLeft() <= 0) {
-            Task patch = new Task();
-            patch.setId(taskId);
-            patch.setStatus("IN_PROGRESS");
-            taskMapper.updateById(patch);
-        }
+        try {
+            // 创建订单(uk_order_pair 兜底并发重复接单)
+            TaskOrder order = new TaskOrder();
+            order.setTaskId(taskId);
+            order.setUserId(userId);
+            order.setProgress(0);
+            order.setStatus("in_progress");
+            try {
+                orderMapper.insert(order);
+            } catch (org.springframework.dao.DuplicateKeyException e) {
+                throw new BusinessException(ResultCode.DATA_DUPLICATED, "你已接取该任务");
+            }
 
-        return Map.of("orderId", order.getId());
+            // 复制任务级里程碑模板(order_id IS NULL)为订单实例;无模板则兜底默认单里程碑
+            List<TaskMilestone> templates = milestoneMapper.selectList(new LambdaQueryWrapper<TaskMilestone>()
+                    .eq(TaskMilestone::getTaskId, taskId)
+                    .isNull(TaskMilestone::getOrderId)
+                    .isNull(TaskMilestone::getDeletedAt)
+                    .orderByAsc(TaskMilestone::getMilestoneOrder));
+            if (templates.isEmpty()) {
+                templates = List.of(defaultMilestone(taskId, t));
+            }
+            int seq = 0;
+            for (TaskMilestone tpl : templates) {
+                seq++;
+                TaskMilestone inst = new TaskMilestone();
+                inst.setOrderId(order.getId());
+                inst.setTaskId(taskId);
+                inst.setTitle(tpl.getTitle());
+                inst.setDescription(tpl.getDescription());
+                inst.setDueDate(tpl.getDueDate());
+                inst.setMilestoneOrder(seq);
+                inst.setReward(tpl.getReward());
+                inst.setStatus("NOT_STARTED");
+                milestoneMapper.insert(inst);
+            }
+
+            // DB 兜底扣名额(真实数据源);affected=0 说明 DB 已满 → 抛异常触发回补
+            if (taskMapper.decrementSlotsLeft(taskId) == 0) {
+                throw new BusinessException(ResultCode.OPERATION_FAILED, "名额已满");
+            }
+            // 名额归零则任务转入进行中
+            Task fresh = taskMapper.selectById(taskId);
+            if (fresh != null && fresh.getSlotsLeft() != null && fresh.getSlotsLeft() <= 0) {
+                Task patch = new Task();
+                patch.setId(taskId);
+                patch.setStatus("IN_PROGRESS");
+                taskMapper.updateById(patch);
+            }
+            return Map.of("orderId", order.getId());
+        } catch (RuntimeException e) {
+            // 预扣后任何失败(重复接单/DB 名额满/异常)都回补 Redis(@Transactional 只回滚 DB)
+            taskStockService.rollback(taskId);
+            throw e;
+        }
     }
 
     /** 老数据/未走发布流的任务无里程碑模板时的兜底:单条"任务交付",reward=任务总酬金。 */

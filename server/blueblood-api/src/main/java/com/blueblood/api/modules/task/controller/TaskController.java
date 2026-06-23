@@ -1,5 +1,6 @@
 package com.blueblood.api.modules.task.controller;
 
+import com.blueblood.api.common.idempotent.IdempotentService;
 import com.blueblood.api.common.result.PageResult;
 import com.blueblood.api.common.result.Result;
 import com.blueblood.api.modules.task.dto.MilestoneReviewVO;
@@ -20,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 任务模块：分类、大厅、详情、接单、我的任务、执行详情、用户端发布、雇主工作台。
+ * 任务模块：分类、大厅、详情、接单、我的任务、执行详情、发布、雇主工作台。
  */
 @Tag(name = "任务", description = "任务大厅、接单、我的任务、执行详情、发布、雇主工作台")
 @RestController
@@ -30,6 +31,7 @@ public class TaskController {
 
     private final TaskService taskService;
     private final TaskPublishService taskPublishService;
+    private final IdempotentService idempotentService;
 
     @Operation(summary = "任务分类列表")
     @GetMapping("/categories")
@@ -75,10 +77,17 @@ public class TaskController {
 
     // ============================== 用户端发布(Q1 企业/个人 + Q2 直接上架) ==============================
 
-    @Operation(summary = "发布任务(企业/个人)")
+    @Operation(summary = "获取一次性幂等 token(发布任务防重提交)")
+    @GetMapping("/idempotent-token")
+    public Result<Map<String, String>> idempotentToken(@RequestParam(defaultValue = "publish") String biz) {
+        return Result.success(Map.of("token", idempotentService.issue(biz)));
+    }
+
+    @Operation(summary = "发布任务(企业/个人,需带 X-Idempotent-Token 头)")
     @PostMapping
-    public Result<Long> publish(@Valid @RequestBody PublishTaskRequest req) {
-        return Result.success(taskPublishService.publish(req));
+    public Result<Long> publish(@RequestHeader(value = "X-Idempotent-Token", required = false) String token,
+                                @Valid @RequestBody PublishTaskRequest req) {
+        return Result.success(taskPublishService.publish(req, token));
     }
 
     @Operation(summary = "编辑我发布的任务(仅雇主,接单前)")

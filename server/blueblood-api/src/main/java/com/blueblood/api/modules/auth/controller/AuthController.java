@@ -6,6 +6,7 @@ import com.blueblood.api.modules.auth.dto.LoginResponse;
 import com.blueblood.api.modules.auth.dto.RegisterRequest;
 import com.blueblood.api.modules.auth.dto.WxLoginRequest;
 import com.blueblood.api.modules.auth.service.AuthService;
+import com.blueblood.api.common.ratelimit.RateLimit;
 import com.blueblood.api.security.JwtProperties;
 import com.blueblood.api.security.LoginUser;
 import com.blueblood.api.security.SecurityUtils;
@@ -32,6 +33,7 @@ public class AuthController {
     private final JwtProperties jwtProperties;
 
     @Operation(summary = "登录（真实校验：user 表 + BCrypt）")
+    @RateLimit(count = 5, seconds = 60, key = "#a0.username", message = "登录尝试过于频繁,请稍后再试")
     @PostMapping("/login")
     public Result<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
         return Result.success(authService.login(request));
@@ -45,6 +47,7 @@ public class AuthController {
     }
 
     @Operation(summary = "发送验证码(dev 桩返回 code 便于联调)")
+    @RateLimit(count = 1, seconds = 60, key = "#a0", message = "验证码发送过于频繁,请60秒后再试")
     @PostMapping("/send-code")
     public Result<Map<String, String>> sendCode(@RequestParam String target, @RequestParam String type) {
         String code = authService.sendCode(target, type);

@@ -86,13 +86,14 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { showToast, showSuccessToast } from 'vant'
 import SubPageLayout from '@/layouts/SubPageLayout.vue'
-import { getTaskCategories, publishTask } from '@/api/task'
+import { getTaskCategories, publishTask, getIdempotentToken } from '@/api/task'
 import type { TaskCategory, PublishTaskPayload } from '@/types/task'
 
 const router = useRouter()
 const categories = ref<TaskCategory[]>([])
 const submitting = ref(false)
 const skillInput = ref('')
+const publishToken = ref('')
 
 const form = reactive({
   title: '',
@@ -126,6 +127,11 @@ onMounted(async () => {
     categories.value = await getTaskCategories()
   } catch {
     categories.value = []
+  }
+  try {
+    publishToken.value = await getIdempotentToken()
+  } catch {
+    publishToken.value = ''
   }
 })
 
@@ -175,11 +181,13 @@ async function handleSubmit() {
         milestoneOrder: i + 1,
       })),
     }
-    await publishTask(payload)
+    await publishTask(payload, publishToken.value)
     showSuccessToast('发布成功')
     router.replace('/tasks/published')
   } catch (e) {
     showToast((e as Error).message || '发布失败')
+    // 发布失败后重新获取 token,允许重试
+    try { publishToken.value = await getIdempotentToken() } catch { /* ignore */ }
   } finally {
     submitting.value = false
   }

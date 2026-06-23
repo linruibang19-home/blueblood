@@ -3,6 +3,7 @@ package com.blueblood.api.modules.task.service;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.blueblood.api.common.exception.BusinessException;
+import com.blueblood.api.common.idempotent.IdempotentService;
 import com.blueblood.api.common.result.PageResult;
 import com.blueblood.api.common.result.ResultCode;
 import com.blueblood.api.modules.enterprise.entity.EnterpriseApplication;
@@ -43,6 +44,9 @@ public class TaskPublishService {
     private final MilestoneSubmissionMapper submissionMapper;
     private final UserMapper userMapper;
     private final EnterpriseApplicationMapper enterpriseAppMapper;
+    private final TaskStockService taskStockService;
+    private final TaskListCacheService taskListCacheService;
+    private final IdempotentService idempotentService;
 
     /** 发布任务可编辑的状态(已有人接单进入 IN_PROGRESS 后禁止编辑) */
     private static final Set<String> EDITABLE_STATUS = Set.of("APPROVED", "RECRUITING");
@@ -50,7 +54,11 @@ public class TaskPublishService {
     // ============================== 发布 / 编辑 / 下架 ==============================
 
     @Transactional
-    public Long publish(PublishTaskRequest req) {
+    public Long publish(PublishTaskRequest req, String idempotentToken) {
+        // 幂等校验(防重复提交,前端需先取 token 再发布)
+        if (!idempotentService.consume("publish", idempotentToken)) {
+            throw new BusinessException(ResultCode.OPERATION_FAILED, "请勿重复提交,请刷新页面重试");
+        }
         validateRewardSum(req.getReward(), req.getMilestones());
 
         Long employerId = SecurityUtils.currentUserId();
@@ -73,6 +81,9 @@ public class TaskPublishService {
         Long taskId = t.getId();
         saveSkills(taskId, req.getSkills());
         saveMilestoneTemplates(taskId, req.getMilestones());
+        // 初始化 Redis 名额库存(秒杀预扣用)
+        taskStockService.initStock(taskId, t.getTotalSlots() == null ? 0 : t.getTotalSlots());
+        taskListCacheService.evictAll();
         return taskId;
     }
 
@@ -104,6 +115,7 @@ public class TaskPublishService {
         softDeleteMilestoneTemplates(taskId);
         saveSkills(taskId, req.getSkills());
         saveMilestoneTemplates(taskId, req.getMilestones());
+        taskListCacheService.evictAll();
     }
 
     @Transactional
@@ -113,6 +125,7 @@ public class TaskPublishService {
         patch.setId(taskId);
         patch.setStatus("CLOSED");
         taskMapper.updateById(patch);
+        taskListCacheService.evictAll();
     }
 
     // ============================== 我发布的任务 ==============================

@@ -207,10 +207,18 @@ export async function submitMilestone(orderId: string, milestoneId: string, data
 
 // ===== 用户端发布 / 雇主工作台 =====
 
-export async function publishTask(payload: PublishTaskPayload): Promise<number> {
+export async function getIdempotentToken(biz = 'publish'): Promise<string> {
+  if (!USE_API) { return 'mock-token' }
+  await ensureReady()
+  const data = await request.get<any, any>('/task/idempotent-token', { params: { biz } })
+  return data?.token || ''
+}
+
+export async function publishTask(payload: PublishTaskPayload, token?: string): Promise<number> {
   if (!USE_API) { await delay(400); return Math.floor(Date.now() / 1000) }
   await ensureReady()
-  const data = await request.post<any, any>('/task', payload)
+  const headers: Record<string, string> = token ? { 'X-Idempotent-Token': token } : {}
+  const data = await request.post<any, any>('/task', payload, { headers })
   return Number(data)
 }
 

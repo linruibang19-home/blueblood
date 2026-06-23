@@ -16,4 +16,8 @@ public interface TaskMapper extends BaseMapper<Task> {
     @Update("UPDATE task SET slots_left = slots_left - 1 " +
             "WHERE id = #{taskId} AND slots_left > 0 AND deleted_at IS NULL")
     int decrementSlotsLeft(@Param("taskId") Long taskId);
+
+    /** 浏览数原子 +1(防并发计数丢失更新)。 */
+    @Update("UPDATE task SET view_count = view_count + 1 WHERE id = #{taskId}")
+    int incrementViewCount(@Param("taskId") Long taskId);
 }
